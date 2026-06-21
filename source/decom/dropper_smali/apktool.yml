@@ -1,0 +1,33 @@
+version: 3.0.2
+apkFileName: dropper_decrypted.apk
+usesFramework:
+  ids:
+  - 1
+sdkInfo:
+  minSdkVersion: 26
+  targetSdkVersion: 35
+versionInfo:
+  versionCode: 16
+  versionName: 4.4.49
+resourcesInfo:
+  packageId: 127
+doNotCompress:
+- arsc
+- png
+- assets/35b4b903de5ae86b.dat
+- assets/dexopt/baseline.prof
+- assets/dexopt/baseline.profm
+- assets/f285936f30abb199.dat
+- assets/fcc6574b044ce8b4.dat
+- assets/fd1c9b71cf9bd307.dat
+- res/raw/07eeed9072047d67.dat
+- res/raw/0fc449cea2357720.dat
+- res/raw/4d79b7c340155aaf.dat
+- res/raw/5afb4633e88494e3.dat
+- res/raw/7f711e41957a59e3.dat
+- res/raw/9a4551a05129d518.dat
+- res/raw/bf0c0e851531f402.dat
+- res/raw/dc792eaa07d215af.dat
+- res/raw/ff9d7518254c39cc.dat
+- res/xml/2a0ef3957413fc1f.dat
+- res/xml/30a23b2c60c26aea.dat

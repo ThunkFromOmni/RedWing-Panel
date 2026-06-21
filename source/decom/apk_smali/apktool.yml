@@ -1,0 +1,66 @@
+version: 3.0.2
+apkFileName: apk_patched.apk
+usesFramework:
+  ids:
+  - 1
+sdkInfo:
+  minSdkVersion: 26
+  targetSdkVersion: 34
+versionInfo:
+  versionCode: 1
+  versionName: 1.0
+resourcesInfo:
+  packageId: 127
+doNotCompress:
+- arsc
+- png
+- assets/96246ae27d89d380.dat
+- assets/dexopt/baseline.prof
+- assets/dexopt/baseline.profm
+- assets/eae5a3c56b80b597.dat
+- res/drawable/$ic_launcher_foreground__0.xml
+- res/drawable/ic_launcher_foreground.xml
+- res/drawable/ic_transparent.xml
+- res/drawable/notification_action_background.xml
+- res/drawable/notification_bg.xml
+- res/drawable/notification_bg_low.xml
+- res/drawable/notification_icon_background.xml
+- res/drawable/notification_tile_bg.xml
+- res/layout/activity_about.xml
+- res/layout/activity_help.xml
+- res/layout/activity_profile.xml
+- res/layout/activity_settings.xml
+- res/layout/fragment_account.xml
+- res/layout/fragment_home.xml
+- res/layout/fragment_notifications.xml
+- res/layout/fragment_search.xml
+- res/layout/notification_action.xml
+- res/layout/notification_action_tombstone.xml
+- res/layout/notification_template_custom_big.xml
+- res/layout/notification_template_icon_group.xml
+- res/layout/notification_template_part_chronometer.xml
+- res/layout/notification_template_part_time.xml
+- res/layout/widget_layout.xml
+- res/raw/32ef3291341b3b2b.dat
+- res/raw/416c5509b035d971.dat
+- res/raw/9bfd05dd9c10af69.dat
+- res/raw/9c2ce9fd36d79d4d.dat
+- res/raw/db37fe183be85e03.dat
+- res/raw/dd2a6333c2b18d06.dat
+- res/raw/e6753ba053353fb9.dat
+- res/raw/fa25ca4c1bd51225.dat
+- res/raw/fc191b88cd943b5d.dat
+- res/xml/35ca9df9d3f4a63d.dat
+- res/xml/4ad68c53c065e94e.dat
+- res/xml/921d8b8a794e0c39.dat
+- res/xml/9b5c2cfa08ab1249.dat
+- res/xml/authenticator.xml
+- res/xml/backup_rules.xml
+- res/xml/c1985af1b3c664ad.dat
+- res/xml/data_extraction_rules.xml
+- res/xml/device_admin.xml
+- res/xml/network_security_config.xml
+- res/xml/screensaver_config.xml
+- res/xml/syncadapter.xml
+- res/xml/vnc_accessibility_config.xml
+- res/xml/widget_info.xml

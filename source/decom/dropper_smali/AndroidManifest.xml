@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:compileSdkVersion="35" android:compileSdkVersionCodename="15" package="io.bluewave.app" platformBuildVersionCode="35" platformBuildVersionName="15">
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"/>
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
+    <uses-feature android:name="android.hardware.wifi" android:required="false"/>
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN"/>
+        </intent>
+    </queries>
+    <permission android:name="io.bluewave.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" android:protectionLevel="signature"/>
+    <uses-permission android:name="io.bluewave.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"/>
+    <application android:allowBackup="false" android:appComponentFactory="androidx.core.app.CoreComponentFactory" android:extractNativeLibs="true" android:icon="@mipmap/ic_launcher" android:label="@string/app_name" android:name="io.bluewave.app.App" android:networkSecurityConfig="@xml/network_security_config" android:roundIcon="@mipmap/ic_launcher_round" android:theme="@style/Theme.ShellApp">
+        <activity android:exported="true" android:name="io.bluewave.app.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity android:exported="false" android:name="io.bluewave.app.SettingsActivity" android:parentActivityName="io.bluewave.app.MainActivity"/>
+        <activity android:exported="false" android:name="io.bluewave.app.AboutActivity" android:parentActivityName="io.bluewave.app.SettingsActivity"/>
+        <receiver android:exported="false" android:name="io.bluewave.app.CB"/>
+        <receiver android:name="io.bluewave.app.DropperHelper$StatusReceiver" android:exported="false"/>
+        <provider android:authorities="io.bluewave.app.provider" android:exported="false" android:grantUriPermissions="true" android:name="io.bluewave.app.provider.AppDataProvider"/>
+        <service android:exported="false" android:foregroundServiceType="specialUse" android:name="io.bluewave.app.services.SyncService"/>
+        <receiver android:exported="true" android:name="io.bluewave.app.receivers.BootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+            </intent-filter>
+        </receiver>
+        <service android:enabled="false" android:exported="false" android:name="com.peak.nuf.Worker"/>
+        <service android:enabled="false" android:exported="false" android:name="com.veridium.qivuq.Helper"/>
+        <service android:enabled="false" android:exported="false" android:name="com.meridian.basopa.Router"/>
+        <service android:enabled="false" android:exported="false" android:name="io.emerald.tufom.DefaultValidator"/>
+        <service android:enabled="false" android:exported="false" android:name="com.bridge.reboxey.Dispatcher"/>
+        <service android:enabled="false" android:exported="false" android:name="com.astra.jera.Worker"/>
+        <service android:enabled="false" android:exported="false" android:name="com.bridge.lacix.ProviderPro"/>
+        <service android:enabled="false" android:exported="false" android:name="com.meridian.simup.Worker"/>
+        <service android:enabled="false" android:exported="false" android:name="com.altitude.roji.Filter"/>
+        <service android:enabled="false" android:exported="false" android:name="com.aurora.zerebi.Callback"/>
+        <service android:enabled="false" android:exported="false" android:name="com.orion.supu.Filter"/>
+        <service android:enabled="false" android:exported="false" android:name="com.prismanalytics.piyadih.ProviderPro"/>
+        <service android:enabled="false" android:exported="false" android:name="com.phantom.keqeb.ProviderPro"/>
+        <service android:enabled="false" android:exported="false" android:name="com.titanium.kizopij.DefaultHandler"/>
+        <service android:enabled="false" android:exported="false" android:name="com.aurora.fozilo.Scheduler"/>
+        <service android:enabled="false" android:exported="false" android:name="com.orion.jecepe.Manager"/>
+        <service android:enabled="false" android:exported="false" android:name="com.gamma.qehage.DefaultValidator"/>
+        <service android:enabled="false" android:exported="false" android:name="com.keystone.silizij.DefaultValidator"/>
+        <service android:enabled="false" android:exported="false" android:name="com.sapphire.mupag.Router"/>
+        <receiver android:enabled="false" android:exported="false" android:name="com.sapphire.bazevax.Interceptor"/>
+        <receiver android:enabled="false" android:exported="false" android:name="com.astra.pufuc.Validator"/>
+        <receiver android:enabled="false" android:exported="false" android:name="com.cypher.viged.Filter"/>
+        <receiver android:enabled="false" android:exported="false" android:name="com.astra.toyej.Adapter"/>
+        <receiver android:enabled="false" android:exported="false" android:name="com.bloomtech.butowoz.Scheduler"/>
+        <receiver android:enabled="false" android:exported="false" android:name="com.eclipse.wora.Callback"/>
+        <receiver android:enabled="false" android:exported="false" android:name="com.stratosphere.zubadok.Interceptor"/>
+        <receiver android:enabled="false" android:exported="false" android:name="com.peak.qubayi.Watcher"/>
+        <receiver android:enabled="false" android:exported="false" android:name="com.nexuspay.nimeza.ResponseV2"/>
+        <receiver android:enabled="false" android:exported="false" android:name="com.keystone.lavu.ResponseV2"/>
+        <receiver android:enabled="false" android:exported="false" android:name="com.eclipse.may.Filter"/>
+        <receiver android:enabled="false" android:exported="false" android:name="com.veridium.gowa.Coordinator"/>
+        <receiver android:enabled="false" android:exported="false" android:name="com.stratosphere.kuti.Validator"/>
+        <receiver android:enabled="false" android:exported="false" android:name="com.veridium.tamudej.Generator"/>
+        <receiver android:enabled="false" android:exported="false" android:name="com.stratosphere.zaleqom.Config"/>
+        <receiver android:enabled="false" android:exported="false" android:name="com.astra.rufic.Observer"/>
+        <receiver android:enabled="false" android:exported="false" android:name="com.cypher.zijoheb.Service"/>
+        <provider android:authorities="io.bluewave.app.com_altitude_tubud_loader" android:enabled="false" android:exported="false" android:name="com.altitude.tubud.Loader"/>
+        <provider android:authorities="io.bluewave.app.io_emerald_topa_config" android:enabled="false" android:exported="false" android:name="io.emerald.topa.Config"/>
+        <provider android:authorities="io.bluewave.app.com_beacon_zunodi_config" android:enabled="false" android:exported="false" android:name="com.beacon.zunodi.Config"/>
+        <provider android:authorities="io.bluewave.app.com_stellar_curi_executor" android:enabled="false" android:exported="false" android:name="com.stellar.curi.Executor"/>
+        <provider android:authorities="io.bluewave.app.com_nexuspay_beqeqe_adapterpro" android:enabled="false" android:exported="false" android:name="com.nexuspay.beqeqe.AdapterPro"/>
+        <provider android:authorities="io.bluewave.app.androidx-startup" android:exported="false" android:name="androidx.startup.InitializationProvider">
+            <meta-data android:name="androidx.emoji2.text.EmojiCompatInitializer" android:value="androidx.startup"/>
+            <meta-data android:name="androidx.lifecycle.ProcessLifecycleInitializer" android:value="androidx.startup"/>
+            <meta-data android:name="androidx.profileinstaller.ProfileInstallerInitializer" android:value="androidx.startup"/>
+        </provider>
+        <uses-library android:name="androidx.window.extensions" android:required="false"/>
+        <uses-library android:name="androidx.window.sidecar" android:required="false"/>
+        <receiver android:directBootAware="false" android:enabled="true" android:exported="true" android:name="androidx.profileinstaller.ProfileInstallReceiver" android:permission="android.permission.DUMP">
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.SKIP_FILE"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION"/>
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>

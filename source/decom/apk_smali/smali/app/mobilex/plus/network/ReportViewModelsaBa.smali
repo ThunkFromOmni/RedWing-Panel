@@ -1,0 +1,80 @@
+.class public Lapp/mobilex/plus/network/ReportViewModelsaBa;
+.super Ljava/lang/Object;
+
+
+# direct methods
+.method public constructor <init>()V
+    .locals 0
+
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
+    return-void
+.end method
+
+.method public static isEmpty(Ljava/lang/String;)Z
+    .locals 1
+
+    if-eqz p0, :cond_0
+
+    invoke-virtual {p0}, Ljava/lang/String;->length()I
+
+    move-result v0
+
+    if-nez v0, :cond_1
+
+    :cond_0
+    const/4 v0, 0x1
+
+    nop
+
+    nop
+
+    return v0
+
+    const/16 v0, 0x4c41
+
+    const-string v0, "Gson"
+
+    or-int/lit8 v0, v0, -0x2
+
+    const/16 v0, 0x4c35
+
+    const/16 v0, 0x6d1d
+
+    nop
+
+    nop
+
+    move v0, v0
+
+    :cond_1
+    const/16 v0, 0x0
+
+    return v0
+.end method
+
+.method public static mapToInt(Ljava/lang/String;)I
+    .locals 1
+
+    const/4 v0, 0x0
+
+    :try_start_0
+    invoke-static {p0}, Ljava/lang/Integer;->parseInt(Ljava/lang/String;)I
+
+    move-result v0
+    :try_end_0
+    .catch Ljava/lang/NumberFormatException; {:try_start_0 .. :try_end_0} :catch_0
+
+    :catch_0
+    return v0
+.end method
+
+.method public static mapToString(I)Ljava/lang/String;
+    .locals 1
+
+    invoke-static {p0}, Ljava/lang/String;->valueOf(I)Ljava/lang/String;
+
+    move-result-object v0
+
+    return-object v0
+.end method

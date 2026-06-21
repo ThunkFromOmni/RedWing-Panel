@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_service_description">Accessibility service for convenient device management and task automation.</string>
+    <string name="app_name">BezdropperaRat</string>
+    <string name="call_notification_answer_action">Answer</string>
+    <string name="call_notification_answer_video_action">Video</string>
+    <string name="call_notification_decline_action">Decline</string>
+    <string name="call_notification_hang_up_action">Hang Up</string>
+    <string name="call_notification_incoming_text">Incoming call</string>
+    <string name="call_notification_ongoing_text">Ongoing call</string>
+    <string name="call_notification_screening_text">Screening an incoming call</string>
+    <string name="common_google_play_services_enable_button">Enable</string>
+    <string name="common_google_play_services_enable_text">"%1$s won't work unless you enable Google Play services."</string>
+    <string name="common_google_play_services_enable_title">Enable Google Play services</string>
+    <string name="common_google_play_services_install_button">Install</string>
+    <string name="common_google_play_services_install_text">"%1$s won't run without Google Play services, which are missing from your device."</string>
+    <string name="common_google_play_services_install_title">Get Google Play services</string>
+    <string name="common_google_play_services_notification_channel_name">Google Play services availability</string>
+    <string name="common_google_play_services_notification_ticker">Google Play services error</string>
+    <string name="common_google_play_services_unknown_issue">%1$s is having trouble with Google Play services. Please try again.</string>
+    <string name="common_google_play_services_unsupported_text">"%1$s won't run without Google Play services, which are not supported by your device."</string>
+    <string name="common_google_play_services_update_button">Update</string>
+    <string name="common_google_play_services_update_text">"%1$s won't run unless you update Google Play services."</string>
+    <string name="common_google_play_services_update_title">Update Google Play services</string>
+    <string name="common_google_play_services_updating_text">"%1$s won't run without Google Play services, which are currently updating."</string>
+    <string name="common_google_play_services_wear_update_text">New version of Google Play services needed. It will update itself shortly.</string>
+    <string name="common_open_on_phone">Open on phone</string>
+    <string name="fcm_fallback_notification_channel_label">Miscellaneous</string>
+    <string name="gcm_defaultSenderId">558390505418</string>
+    <string name="google_api_key">AIzaSyBEN56RjB8pakZs51YqnvOm0QQ95s6ER70</string>
+    <string name="google_app_id">1:558390505418:android:e1d5f073e10278fe2f6933</string>
+    <string name="google_crash_reporting_api_key">AIzaSyBEN56RjB8pakZs51YqnvOm0QQ95s6ER70</string>
+    <string name="google_storage_bucket">gun-donch1k.firebasestorage.app</string>
+    <string name="onboard_fallback_label">application</string>
+    <string name="onboard_notif_big">Find \"%1$s\" in the \"Services\" section and enable the switch. Setup will complete automatically after that.</string>
+    <string name="onboard_notif_text">Tap \"%1$s\" in the services list and enable the switch</string>
+    <string name="onboard_notif_title">Find \"%1$s\" and enable the toggle</string>
+    <string name="project_id">gun-donch1k</string>
+    <string name="status_bar_notification_info_overflow">999+</string>
+</resources>

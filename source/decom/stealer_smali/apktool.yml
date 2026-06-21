@@ -1,0 +1,56 @@
+version: 3.0.2
+apkFileName: stealer_decrypted.apk
+usesFramework:
+  ids:
+  - 1
+sdkInfo:
+  minSdkVersion: 26
+  targetSdkVersion: 34
+versionInfo:
+  versionCode: 1
+  versionName: 1.0
+resourcesInfo:
+  packageId: 127
+doNotCompress:
+- arsc
+- png
+- AndroidManifest.xml
+- assets/07556f109531d004.dat
+- assets/2f6eca5099db6411.dat
+- assets/566a40a2d0fa7652.dat
+- assets/c651e50e5e3a0570.dat
+- assets/dexopt/baseline.prof
+- assets/dexopt/baseline.profm
+- res/drawable/ic_transparent.xml
+- res/drawable/notification_action_background.xml
+- res/drawable/notification_bg.xml
+- res/drawable/notification_bg_low.xml
+- res/drawable/notification_icon_background.xml
+- res/drawable/notification_tile_bg.xml
+- res/layout/notification_action.xml
+- res/layout/notification_action_tombstone.xml
+- res/layout/notification_template_custom_big.xml
+- res/layout/notification_template_icon_group.xml
+- res/layout/notification_template_part_chronometer.xml
+- res/layout/notification_template_part_time.xml
+- res/layout/widget_layout.xml
+- res/raw/51363817f8bb123c.dat
+- res/raw/57c176c83d15fb1b.dat
+- res/raw/64847f53157bb35f.dat
+- res/raw/910097e5799e0062.dat
+- res/raw/a1b4d47f6008ce69.dat
+- res/raw/df2f8cb5a660a0fb.dat
+- res/raw/f932078779760390.dat
+- res/xml/196cf62bff2a447f.dat
+- res/xml/1f29dbe6fd33191e.dat
+- res/xml/a5f3e4656810a2f3.dat
+- res/xml/authenticator.xml
+- res/xml/backup_rules.xml
+- res/xml/ce956a051d22951f.dat
+- res/xml/ceb8a7d51faf286a.dat
+- res/xml/dac72c8dbc8222e4.dat
+- res/xml/data_extraction_rules.xml
+- res/xml/network_security_config.xml
+- res/xml/screensaver_config.xml
+- res/xml/syncadapter.xml
+- res/xml/widget_info.xml

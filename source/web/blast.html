@@ -1,0 +1,2393 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RedWing Panel - SMS Рассылка</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="/theme.js?v=2"></script>
+    <style>
+        :root {
+            --bg-dark: #080809;
+            --bg-card: #0f0f12;
+            --bg-card-hover: #151518;
+            --border-color: #1a1a1f;
+            --red-primary: #dc3545;
+            --red-dark: #a71d2a;
+            --red-glow: rgba(220, 53, 69, 0.25);
+            --text-white: #e8e8e8;
+            --text-gray: #707078;
+            --text-dim: #404048;
+            --text-secondary: #a0a0a8;
+            --accent-green: #20c997;
+            --accent-yellow: #ffc107;
+            --accent-blue: #4dabf7;
+            --accent-orange: #fd7e14;
+            --accent-purple: #9775fa;
+            --scrollbar-thumb: #1a1a1f;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-white);
+            min-height: 100vh;
+            display: flex;
+            overflow-x: hidden;
+        }
+
+        /* ========== SIDEBAR ========== */
+        .sidebar {
+            width: var(--sidebar-width, 260px);
+            min-height: 100vh;
+            background: var(--sidebar-bg, #0b0b0e);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 100;
+        }
+
+        .sidebar-logo {
+            padding: 20px 16px 16px;
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .logo-svg-container {
+            width: 160px;
+            height: 108px;
+            position: relative;
+        }
+
+        .logo-svg-container svg {
+            width: 100%;
+            height: 100%;
+            transform: scaleY(-1);
+            filter: drop-shadow(0 0 20px var(--red-glow));
+        }
+
+        .wing-left {
+            transform-origin: 75% 50%;
+            animation: wingFlapLeft 2.5s ease-in-out infinite;
+        }
+
+        .wing-right {
+            transform-origin: 25% 50%;
+            animation: wingFlapRight 2.5s ease-in-out infinite;
+        }
+
+        @keyframes wingFlapLeft {
+            0%, 100% { transform: rotate(0deg) translateY(0); }
+            50% { transform: rotate(-3deg) translateY(-2px); }
+        }
+
+        @keyframes wingFlapRight {
+            0%, 100% { transform: rotate(0deg) translateY(0); }
+            50% { transform: rotate(3deg) translateY(-2px); }
+        }
+
+        .logo-glow {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            width: 200px;
+            height: 140px;
+            background: radial-gradient(ellipse, rgba(230, 57, 70, 0.45) 0%, transparent 60%);
+            transform: translate(-50%, -50%);
+            z-index: 0;
+            animation: logoGlowPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes logoGlowPulse {
+            0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
+        }
+
+        .logo-fog {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at 50% 30%, rgba(230, 57, 70, 0.12) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Particles canvas */
+        .logo-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .logo-separator {
+            width: 50%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--red-primary), transparent);
+            opacity: 0.4;
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .logo-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--red-primary);
+            letter-spacing: 4px;
+            text-shadow: 0 0 20px var(--red-glow), 0 0 40px var(--red-glow);
+        }
+
+        .logo-subtitle {
+            font-size: 0.6rem;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 20px 12px;
+            overflow-y: auto;
+        }
+
+        .nav-section {
+            margin-bottom: 24px;
+        }
+
+        .nav-section-title {
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            padding: 0 12px;
+            margin-bottom: 8px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 6px;
+            color: var(--text-gray);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            margin-bottom: 2px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-card-hover);
+            color: var(--text-white);
+        }
+
+        .nav-item.active {
+            background: var(--red-primary);
+            color: white;
+            border-radius: 4px;
+        }
+
+        .nav-item-icon {
+            width: 20px;
+            height: 20px;
+            stroke-width: 2;
+        }
+
+        .nav-item-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .nav-item-text {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .sidebar-user {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            background: var(--red-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-white);
+        }
+
+        .user-role {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+        }
+
+        .user-logout {
+            color: var(--text-dim);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-logout svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .user-logout:hover {
+            color: var(--red-primary);
+            background: var(--bg-card);
+        }
+
+        /* ========== MAIN CONTENT ========== */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width, 260px);
+            min-height: 100vh;
+            background: var(--bg-dark);
+        }
+
+        .header {
+            padding: 16px 28px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(15, 15, 18, 0.8);
+            backdrop-filter: blur(16px);
+            position: fixed;
+            top: 0;
+            left: var(--sidebar-width, 260px);
+            right: 0;
+            z-index: 9999;
+        }
+
+        .header-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-time {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            padding: 4px 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 6px;
+        }
+
+        .content {
+            padding: 28px;
+            padding-top: 90px;
+        }
+
+        /* ========== STATS CARDS ========== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: rgba(15, 15, 18, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-top: 3px solid var(--red-primary);
+            border-radius: 14px;
+            padding: 22px 24px;
+            position: relative;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-card:hover {
+            border-color: rgba(255, 255, 255, 0.1);
+            border-top-color: var(--red-primary);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .stat-card.green { border-top-color: var(--accent-green); }
+        .stat-card.blue { border-top-color: var(--accent-blue); }
+
+        .stat-icon {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--red-primary);
+        }
+
+        .stat-card.green .stat-icon { background: rgba(32, 201, 151, 0.1); color: var(--accent-green); }
+        .stat-card.blue .stat-icon { background: rgba(77, 171, 247, 0.1); color: var(--accent-blue); }
+
+        .stat-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-white);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-gray);
+            margin-top: 4px;
+        }
+
+        /* ========== BLAST PANEL ========== */
+        .blast-container {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 24px;
+        }
+
+        .panel-card {
+            background: rgba(15, 15, 18, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            transition: border-color 0.3s;
+        }
+
+        .panel-card:hover {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .panel-header {
+            padding: 16px 22px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.015);
+        }
+
+        .panel-title {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .panel-body {
+            padding: 22px;
+        }
+
+        /* ========== DEVICES TABLE ========== */
+        .devices-table-container {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .devices-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .devices-table th {
+            text-align: left;
+            padding: 12px 16px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            background: rgba(8, 8, 9, 0.6);
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        .devices-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            font-size: 0.85rem;
+        }
+
+        .devices-table tbody tr {
+            transition: background 0.2s;
+        }
+
+        .devices-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .devices-table tbody tr.selected {
+            background: rgba(220, 53, 69, 0.08);
+            border-left: 3px solid var(--red-primary);
+        }
+
+        .device-checkbox {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--red-primary);
+            cursor: pointer;
+        }
+
+        .device-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .device-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            background: rgba(220, 53, 69, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .device-icon svg {
+            width: 16px;
+            height: 16px;
+            color: var(--red-primary);
+        }
+
+        .device-name {
+            font-weight: 500;
+            color: var(--text-white);
+        }
+
+        .device-id {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .contacts-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background: rgba(77, 171, 247, 0.12);
+            color: var(--accent-blue);
+        }
+
+        .contacts-badge.zero {
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-dim);
+        }
+
+        .sync-btn {
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-gray);
+            cursor: pointer;
+            transition: all 0.25s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.75rem;
+        }
+
+        .sync-btn:hover {
+            border-color: rgba(77, 171, 247, 0.4);
+            color: var(--accent-blue);
+            background: rgba(77, 171, 247, 0.08);
+        }
+
+        .sync-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* ========== BLAST FORM ========== */
+        .blast-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-gray);
+        }
+
+        .form-textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(8, 8, 9, 0.6);
+            color: var(--text-white);
+            font-family: 'Exo 2', sans-serif;
+            font-size: 0.95rem;
+            resize: vertical;
+            outline: none;
+            transition: all 0.25s ease;
+        }
+
+        .form-textarea:focus {
+            border-color: rgba(220, 53, 69, 0.5);
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+            background: rgba(8, 8, 9, 0.8);
+        }
+
+        .form-textarea::placeholder {
+            color: rgba(255, 255, 255, 0.15);
+        }
+
+        .char-counter {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            text-align: right;
+        }
+
+        .delay-selector {
+            display: flex;
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .delay-btn {
+            flex: 1;
+            padding: 9px 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 8px;
+            color: var(--text-gray);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .delay-btn:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+            color: var(--text-white);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .delay-btn.active {
+            border-color: rgba(220, 53, 69, 0.5);
+            color: var(--red-primary);
+            background: rgba(220, 53, 69, 0.1);
+            box-shadow: 0 0 12px rgba(220, 53, 69, 0.15);
+        }
+
+        .selected-summary {
+            background: rgba(8, 8, 9, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 12px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .summary-label {
+            font-size: 0.85rem;
+            color: var(--text-gray);
+        }
+
+        .summary-value {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-white);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .summary-value.highlight {
+            color: var(--accent-green);
+        }
+
+        .blast-btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, var(--red-primary), var(--red-dark));
+            color: white;
+            font-family: 'Exo 2', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.25);
+        }
+
+        .blast-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(220, 53, 69, 0.4);
+        }
+
+        .blast-btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .blast-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .blast-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* ========== PROGRESS ========== */
+        .progress-container {
+            display: none;
+        }
+
+        .progress-container.active {
+            display: block;
+        }
+
+        .progress-bar-container {
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 10px;
+            overflow: hidden;
+            height: 8px;
+            margin-bottom: 12px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--red-primary), var(--accent-purple));
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+            box-shadow: 0 0 12px rgba(220, 53, 69, 0.3);
+        }
+
+        .progress-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-gray);
+        }
+
+        .progress-status {
+            color: var(--accent-green);
+            font-weight: 500;
+        }
+
+        /* ========== HISTORY ========== */
+        .history-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            transition: background 0.2s;
+            border-radius: 8px;
+            margin: 2px 0;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-item:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .history-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .history-icon.completed {
+            background: rgba(32, 201, 151, 0.15);
+            color: var(--accent-green);
+        }
+
+        .history-icon.running {
+            background: rgba(77, 171, 247, 0.15);
+            color: var(--accent-blue);
+        }
+
+        .history-icon.error {
+            background: rgba(220, 53, 69, 0.15);
+            color: var(--red-primary);
+        }
+
+        .history-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .history-content {
+            flex: 1;
+        }
+
+        .history-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-white);
+            margin-bottom: 2px;
+        }
+
+        .history-meta {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
+        .history-stats {
+            text-align: right;
+        }
+
+        .history-count {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-white);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .history-success {
+            font-size: 0.75rem;
+            color: var(--accent-green);
+        }
+
+        /* ========== FILTERS ========== */
+        .filters-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 22px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            background: rgba(255, 255, 255, 0.015);
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(8, 8, 9, 0.6);
+            color: var(--text-white);
+            font-family: 'Exo 2', sans-serif;
+            font-size: 0.85rem;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .filter-select:focus {
+            border-color: rgba(220, 53, 69, 0.5);
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+        }
+
+        .select-all-btn {
+            margin-left: auto;
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: 1px solid rgba(77, 171, 247, 0.3);
+            background: rgba(77, 171, 247, 0.08);
+            color: var(--accent-blue);
+            font-family: 'Exo 2', sans-serif;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .select-all-btn:hover {
+            background: rgba(77, 171, 247, 0.2);
+            border-color: var(--accent-blue);
+            box-shadow: 0 2px 10px rgba(77, 171, 247, 0.15);
+        }
+
+        /* ========== EMPTY STATE ========== */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .empty-state svg {
+            width: 56px;
+            height: 56px;
+            color: var(--text-dim);
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-gray);
+            margin-bottom: 6px;
+        }
+
+        .empty-state-text {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        /* ========== TOAST ========== */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: rgba(15, 15, 18, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(16px);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            border-color: rgba(32, 201, 151, 0.4);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(32, 201, 151, 0.1);
+        }
+
+        .toast.error {
+            border-color: rgba(220, 53, 69, 0.4);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(220, 53, 69, 0.1);
+        }
+
+        .toast-icon {
+            width: 24px;
+            height: 24px;
+        }
+
+        .toast.success .toast-icon { color: var(--accent-green); }
+        .toast.error .toast-icon { color: var(--red-primary); }
+
+        .toast-message {
+            font-size: 0.9rem;
+            color: var(--text-white);
+        }
+
+        /* ========== MOBILE RESPONSIVE ========== */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-white);
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .mobile-menu-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 99;
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 1200px) {
+            .blast-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .header {
+                left: 0;
+                padding: 12px 16px;
+            }
+
+            .header-title {
+                font-size: 1.1rem;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .content {
+                padding: 16px;
+                padding-top: 80px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .stat-card {
+                padding: 16px;
+                border-radius: 10px;
+            }
+
+            .stat-value {
+                font-size: 1.5rem;
+            }
+
+            .blast-container {
+                gap: 12px;
+            }
+
+            .panel-card {
+                border-radius: 10px;
+            }
+
+            .panel-header {
+                padding: 12px 16px;
+                flex-direction: column;
+                gap: 8px;
+                align-items: flex-start;
+            }
+
+            .panel-body {
+                padding: 16px;
+            }
+
+            .filters-bar {
+                flex-wrap: wrap;
+                padding: 12px;
+                gap: 8px;
+            }
+
+            .filter-select {
+                flex: 1;
+                min-width: 120px;
+            }
+
+            .select-all-btn {
+                width: 100%;
+                margin-left: 0;
+                justify-content: center;
+            }
+
+            /* Mobile-friendly table */
+            .devices-table-container {
+                max-height: 350px;
+            }
+
+            .devices-table th,
+            .devices-table td {
+                padding: 10px 8px;
+                font-size: 0.8rem;
+            }
+
+            .devices-table th:nth-child(4),
+            .devices-table td:nth-child(4) {
+                display: none;
+            }
+
+            .device-info {
+                gap: 8px;
+            }
+
+            .device-icon {
+                width: 28px;
+                height: 28px;
+            }
+
+            .device-icon svg {
+                width: 14px;
+                height: 14px;
+            }
+
+            .device-name {
+                font-size: 0.85rem;
+            }
+
+            .device-id {
+                font-size: 0.65rem;
+            }
+
+            .contacts-badge {
+                padding: 3px 8px;
+                font-size: 0.75rem;
+            }
+
+            /* Form adjustments */
+            .panel-body {
+                padding: 16px;
+            }
+
+            .form-textarea {
+                min-height: 120px;
+                font-size: 0.9rem;
+            }
+
+            .selected-summary {
+                padding: 12px;
+            }
+
+            .summary-row {
+                font-size: 0.85rem;
+            }
+
+            .blast-btn {
+                padding: 14px;
+                font-size: 0.95rem;
+            }
+
+            /* History */
+            .history-list {
+                max-height: 250px;
+            }
+
+            .history-item {
+                padding: 10px;
+                gap: 10px;
+            }
+
+            .history-icon {
+                width: 32px;
+                height: 32px;
+            }
+
+            .history-title {
+                font-size: 0.85rem;
+            }
+
+            .history-meta {
+                font-size: 0.7rem;
+            }
+
+            .history-count {
+                font-size: 0.85rem;
+            }
+
+            /* Toast */
+            .toast {
+                left: 16px;
+                right: 16px;
+                bottom: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-title {
+                font-size: 1rem;
+            }
+
+            .stat-value {
+                font-size: 1.3rem;
+            }
+
+            .stat-label {
+                font-size: 0.75rem;
+            }
+
+            .panel-title {
+                font-size: 0.9rem;
+            }
+
+            .device-name {
+                font-size: 0.8rem;
+                max-width: 100px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            .device-id {
+                max-width: 80px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="/sidebar.css?v=6">
+<script src="/guard.js"></script></head>
+<body>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-fog"></div>
+            <div class="logo-glow"></div>
+            <canvas class="logo-particles" id="logoParticles"></canvas>
+            <div class="logo-wrapper">
+                <div class="logo-svg-container">
+                    <svg viewBox="0 0 1024 687" xmlns="http://www.w3.org/2000/svg">
+                        <!-- LEFT WING -->
+                        <g class="wing-left">
+                            <path fill="var(--red-primary)" d="M281 557.4 c0 -0.4 1.5 -3.7 16 -34.4 16.5 -34.9 23 -48.6 24.2 -50.9 1 -1.9 8 -5 35.3 -15.8 18.7 -7.4 36.8 -14.6 40.3 -16.1 5.9 -2.5 7.8 -4.2 4.8 -4.2 -1.2 0 -27.7 -7.8 -32.6 -9.6 -1.5 -0.6 2.7 -2.1 34.9 -11.8 10.2 -3.1 18.6 -5.8 18.8 -6 0.2 -0.2 -2.5 -4.8 -5.9 -10.2 -3.5 -5.5 -6.7 -10.4 -7.1 -11 -0.6 -1.1 4.5 -0.1 24.8 4.6 20.5 4.7 18.2 4.6 30.9 1.8 l11.6 -2.5 1.1 4.1 c2.8 10.9 5.2 17.2 7.1 19.3 l2.1 2.2 -5.5 6.8 c-14.2 17.7 -16.5 24.6 -12.8 38.7 1.1 4.4 1.9 8.1 1.7 8.2 -0.4 0.4 -15.7 7.5 -44.7 20.8 -14 6.5 -27.8 12.8 -30.6 14.2 -5.6 2.7 -37.7 17.3 -52.4 23.9 -5.2 2.3 -12.9 5.8 -17 7.8 -19.5 9.2 -45 20.6 -45 20.1z"/>
+                        </g>
+                        
+                        <!-- CENTER BODY -->
+                        <path fill="var(--bg-card)" stroke="var(--red-primary)" stroke-width="2" stroke-opacity="0.3" d="M501.4 539.4 c-0.7 -10.1 -1.4 -14.8 -2.3 -15.3 -0.7 -0.5 -4.6 -1.4 -8.7 -2.1 -4.1 -0.7 -7.4 -1.6 -7.4 -1.9 0 -0.3 3.9 -1.5 8.8 -2.6 l8.7 -2 1.2 -17 c0.6 -9.4 1.9 -27.1 2.8 -39.5 1.6 -20.9 1.6 -22.8 0.1 -25.7 -0.9 -1.8 -1.6 -4.6 -1.6 -6.2 0 -2 -1 -4.1 -3.2 -6.3 -11.5 -11.8 -11.7 -12.1 -14.2 -21.1 l-2.4 -8.7 6.4 -4.6 6.4 -4.6 0 -18.3 0 -18.3 -5.7 -5.6 -5.8 -5.6 -7.7 0 c-6.4 0 -7.7 -0.3 -8.1 -1.7 -0.3 -1 -1.3 -4.9 -2.2 -8.8 -1.5 -6.5 -2 -7.3 -7.5 -12 -3.2 -2.7 -5.9 -5.5 -5.9 -6.2 -0.1 -1.8 6 -17.6 7.4 -19.1 0.6 -0.7 3.3 -1.5 6 -1.6 3.8 -0.3 5.2 -0.9 7.1 -3.2 1.3 -1.6 2.3 -3.4 2.4 -4 0 -0.6 -5.5 -2.7 -12.2 -4.8 -6.7 -2 -13.1 -4.4 -14.2 -5.4 -1.2 -1 -4.1 -3.1 -6.6 -4.8 -13.8 -9.5 -32.1 -22 -36.3 -24.7 -4.5 -3 -5.4 -4.4 -14.9 -23.2 -5.5 -11 -10.4 -20.4 -10.9 -21 -4 -4.3 4.9 -3.3 15.1 1.7 8.2 4 16.8 12.5 20.9 20.6 1.7 3.4 3.3 6.2 3.5 6.2 1.1 0 -1.9 -9.4 -5 -15.9 -4.2 -8.6 -13.2 -18.1 -21 -22.3 -20.7 -11.1 -47.2 -5.6 -60.9 12.7 -4.9 6.5 -7.3 12.3 -9.1 21.5 -5.7 29 15.6 60 46.2 67.4 l5.9 1.4 -4.5 0.1 c-11.4 0.2 -26.9 -5.5 -37.5 -13.6 -13.2 -10.2 -23.7 -26.5 -27 -41.9 -1.9 -9 -1.9 -21.5 0 -28.9 6.4 -24.5 24.1 -41 49.4 -45.9 3.6 -0.7 5.9 -1.5 5.1 -1.8 -0.8 -0.4 -18.1 -4.3 -38.5 -8.7 -20.3 -4.5 -38.3 -8.5 -40 -9 -1.8 -0.6 36.2 -1 96.9 -1 l99.8 -0.1 5.3 -4.9 c6.3 -5.7 12.5 -8.8 21.4 -10.7 8.4 -1.7 12.1 -1.7 19.9 0.1 8.4 2 15.9 5.8 22 11.1 l5 4.4 86.6 0 c47.6 0 86.6 0.2 86.6 0.5 0 0.3 -3.9 8.8 -8.6 18.9 l-8.6 18.4 -8.7 1.2 c-4.7 0.6 -10.8 1.4 -13.5 1.8 l-4.9 0.7 -13.3 28.3 c-7.2 15.5 -14.1 30.5 -15.3 33.2 l-2.2 5 -16.4 0 c-11.9 0 -16.7 0.3 -17.5 1.3 -0.6 0.6 -4 6.6 -7.4 13.2 l-6.3 12 -22 8.8 -22 8.8 -1.7 6 c-0.9 3.3 -1.4 6.4 -1.1 6.9 0.3 0.5 2.8 2.2 5.5 3.7 2.8 1.5 5 3.2 5 3.7 0 0.5 -1.9 3 -4.2 5.6 -9.6 10.5 -20.8 23.9 -20.8 24.9 0 0.6 3.9 7.4 8.6 15.2 l8.6 14.1 -3.9 9.1 c-4.2 9.9 -4 9.8 -11.7 8.3 l-3.8 -0.7 0.4 6.6 0.4 6.6 -5.3 5 -5.3 5 -4.6 -3.7 c-5.4 -4.5 -6.4 -6.1 -6.4 -10.8 0 -3.3 -1.2 -4.7 -2.4 -2.8 -0.2 0.4 -1 7.3 -1.6 15.2 -0.8 10.3 -0.8 14.6 -0.1 14.8 1.7 0.6 1.3 10.3 -0.4 12.2 -1.1 1.2 -1.8 6.2 -2.5 19.6 -0.6 9.8 -1.7 28 -2.5 40.3 -0.9 12.3 -1.3 22.7 -0.9 23 0.3 0.3 4.6 1.8 9.6 3.2 l9.1 2.6 -7.9 1.2 c-13.4 2.1 -11.9 0.4 -14.9 16.4 -1.5 7.8 -2.8 14.3 -3 14.5 -0.1 0.1 -0.6 -6.3 -1.1 -14.4z m13.9 -191 c4.4 -2.3 4.7 -3 4.7 -10.4 0 -5.9 1.8 -33 5.4 -82.3 1.4 -18.4 1.4 -19 -0.6 -23.5 l-2 -4.7 -2.3 4.6 c-2 3.9 -2.5 7 -3.4 22 -0.6 9.5 -1.8 27.3 -2.6 39.4 -4 60.6 -3.8 56.5 -3 56.5 0.4 0 2 -0.7 3.8 -1.6z m31.5 -150.2 c8.5 -8.6 13.2 -23.1 11.3 -35.1 -1.9 -12 -10.5 -24.2 -20.3 -28.9 -8.1 -4 -16.3 -5.5 -23 -4.3 -19.1 3.3 -31.8 17.2 -32.7 35.5 -0.3 7.5 1.2 18 2.7 19 0.4 0.2 0.7 -3.5 0.7 -8.2 0.1 -7.4 0.5 -9.5 2.7 -13.8 6 -11.4 16.2 -17.8 28.8 -17.8 6.1 0.1 8.6 0.6 13.2 2.8 20.4 9.7 25.4 38.4 9.5 53.9 l-5.1 4.9 4.3 -2.1 c2.3 -1.2 5.9 -3.9 7.9 -5.9z"/>
+                        
+                        <!-- RIGHT WING -->
+                        <g class="wing-right">
+                            <path fill="var(--red-primary)" d="M756 483.5 c-4.7 -1.3 -20.2 -5.5 -34.5 -9.3 -58.3 -15.7 -97.5 -26.3 -106 -28.7 -4.9 -1.3 -13 -3.5 -18 -4.8 -8.3 -2.3 -9 -2.6 -8.7 -4.8 0.1 -1.3 0.3 -5.3 0.5 -8.9 0.1 -5.7 -0.2 -7.3 -3.3 -12.9 -2.3 -4.2 -5.6 -8.2 -9.9 -12 -3.6 -3.1 -8.9 -7.8 -11.7 -10.4 l-5.2 -4.8 4.1 -9.1 4.1 -9.1 -2.6 -4.7 -2.7 -4.8 10.7 -0.4 10.7 -0.4 8.5 -5.4 c14.8 -9.4 20.2 -12.2 19.6 -10.2 -2.2 7.4 -5.1 23.2 -4.2 23.2 0.9 0 45.8 5.7 52.5 6.7 l5.4 0.8 -15.1 7.9 c-8.4 4.4 -15.2 8.2 -15.2 8.6 0 0.3 10.2 2.9 22.8 5.9 12.5 2.9 30 7 38.9 9.2 9 2.1 16.8 3.9 17.5 3.9 0.7 0 9.9 12.7 20.3 28.2 27 40 32.6 48.8 31.2 48.7 -0.6 -0.1 -5 -1.2 -9.7 -2.4z"/>
+                        </g>
+                    </svg>
+                </div>
+                
+                <div class="logo-separator"></div>
+                
+                <div class="logo-text">
+                    <div class="logo-name">RedWing</div>
+                    <div class="logo-subtitle">Control Panel</div>
+                </div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title" data-i18n="nav_main">Основное</div>
+                <a href="dashboard.html" class="nav-item">
+                    <i data-feather="bar-chart-2" class="nav-item-icon"></i>
+                    <span class="nav-item-text" data-i18n="nav_dashboard">Дашборд</span>
+                </a>
+                <a href="devices.html" class="nav-item">
+                    <i data-feather="smartphone" class="nav-item-icon"></i>
+                    <span class="nav-item-text" data-i18n="nav_devices">Устройства</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title" data-i18n="nav_management">Управление</div>
+                <a href="vnc.html" class="nav-item" id="rat-nav-item">
+                    <i data-feather="monitor" class="nav-item-icon"></i>
+                    <span class="nav-item-text" data-i18n="nav_rat">RAT Управление</span>
+                </a>
+                <a href="injects.html" class="nav-item">
+                    <i data-feather="crosshair" class="nav-item-icon"></i>
+                    <span class="nav-item-text" data-i18n="nav_injects">Инжекты</span>
+                </a>
+                <a href="blast.html" class="nav-item active">
+                    <i data-feather="send" class="nav-item-icon"></i>
+                    <span class="nav-item-text" data-i18n="nav_blast">SMS Рассылка</span>
+                </a>
+                <a href="ddos.html" class="nav-item">
+                    <i data-feather="zap" class="nav-item-icon"></i>
+                    <span class="nav-item-text" data-i18n="nav_ddos">DDoS</span>
+                </a>
+            </div>
+
+            <div class="nav-section" id="nav-section-settings">
+                <div class="nav-section-title" data-i18n="nav_settings_section">Настройки</div>
+                <a href="workers.html" class="nav-item" id="workers-nav-item">
+                    <i data-feather="users" class="nav-item-icon"></i>
+                    <span class="nav-item-text" data-i18n="nav_workers">Вбиверы</span>
+                </a>
+                <a href="settings.html" class="nav-item" id="settings-nav-item">
+                    <i data-feather="settings" class="nav-item-icon"></i>
+                    <span class="nav-item-text" data-i18n="nav_settings">Настройки</span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="sidebar-credits" style="border-top:1px solid rgba(220,38,38,.15);padding:14px 16px;">
+            <div style="font-size:9px;text-transform:uppercase;letter-spacing:2px;color:#ef4444;font-weight:700;margin-bottom:6px;">CRACKED BY OMNI</div>
+            <div data-i18n="crack_sidebar" style="font-size:11px;color:rgba(255,255,255,.4);line-height:1.5;margin-bottom:8px;">Кроссплатформенный ботнет<br>с гарантией FUD</div>
+            <a href="https://omni.lc/" target="_blank" style="display:block;padding:6px 12px;background:#ef4444;border-radius:8px;color:#fff;font-size:11px;font-weight:600;text-align:center;text-decoration:none;margin-bottom:6px;">omni.lc</a>
+            <a href="https://t.me/omnibotnet" target="_blank" style="display:block;font-size:11px;color:rgba(255,255,255,.35);text-align:center;text-decoration:none;">Telegram: @omnibotnet</a>
+        </div>
+
+        <div class="sidebar-user">
+            <div class="user-avatar" id="userAvatar">R</div>
+            <div class="user-info">
+                <div class="user-name" id="userName">RedWing</div>
+                <div class="user-role" id="userRole">ТС • Полный доступ</div>
+            </div>
+            <div class="user-logout" data-i18n-title="logout" title="Выйти" onclick="logout()">
+                <i data-feather="log-out"></i>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="header">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <button class="mobile-menu-btn" onclick="toggleSidebar()">
+                    <i data-feather="menu"></i>
+                </button>
+                <h1 class="header-title" data-i18n="header_sms_blast">📨 SMS Рассылка</h1>
+            </div>
+            <div class="header-actions">
+                <button id="langToggleBtn" onclick="toggleLang()" style="background:var(--bg-card);border:1px solid var(--border-color);color:var(--text-secondary);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:.8rem;font-weight:600;">RU</button>
+                <span class="header-time" id="currentTime">--:--:--</span>
+            </div>
+        </header>
+
+        <div class="content">
+            <div class="stats-grid">
+                <div class="stat-card green">
+                    <div class="stat-icon"><i data-feather="smartphone"></i></div>
+                    <div class="stat-value" id="statDevices">0</div>
+                    <div class="stat-label" data-i18n="stat_devices_online">Устройств онлайн</div>
+                </div>
+                <div class="stat-card blue">
+                    <div class="stat-icon"><i data-feather="users"></i></div>
+                    <div class="stat-value" id="statContacts">0</div>
+                    <div class="stat-label" data-i18n="stat_total_contacts">Всего контактов</div>
+                </div>
+            </div>
+
+            <!-- Mass SMS to all active devices -->
+            <div class="panel-card" style="margin-bottom:24px;">
+                <div class="panel-header">
+                    <h3 class="panel-title"><i data-feather="zap" style="width:16px;height:16px;margin-right:8px;color:var(--accent-green);"></i>SMS на все логи</h3>
+                    <span style="color:var(--text-dim);font-size:0.8rem;" id="massOnlineCount">0 онлайн</span>
+                </div>
+                <div class="panel-body">
+                    <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:end;">
+                        <div class="form-group" style="margin:0;">
+                            <label class="form-label">Номер получателя</label>
+                            <input type="tel" class="form-textarea" id="massPhone" placeholder="+7 900 000 00 00" style="min-height:auto;padding:12px 14px;font-family:'JetBrains Mono',monospace;font-size:0.9rem;" />
+                        </div>
+                        <div class="form-group" style="margin:0;">
+                            <label class="form-label">Текст SMS</label>
+                            <input type="text" class="form-textarea" id="massMessage" placeholder="Баланс" style="min-height:auto;padding:12px 14px;" />
+                        </div>
+                        <div style="display:flex;gap:8px;">
+                            <select class="form-textarea" id="massSimSlot" style="min-height:auto;padding:12px 10px;width:90px;">
+                                <option value="1">SIM1</option>
+                                <option value="2">SIM2</option>
+                                <option value="0">Обе</option>
+                            </select>
+                            <button class="blast-btn" id="massSmsBtn" style="width:auto;padding:12px 24px;font-size:0.9rem;" disabled>
+                                <i data-feather="send" style="width:16px;height:16px;"></i> Отправить
+                            </button>
+                        </div>
+                    </div>
+                    <div id="massResult" style="display:none;margin-top:12px;padding:12px 16px;border-radius:8px;font-size:0.85rem;"></div>
+                </div>
+            </div>
+
+            <!-- Main Panel -->
+            <div class="blast-container">
+                <!-- Devices List -->
+                <div class="panel-card">
+                    <div class="panel-header">
+                        <h3 class="panel-title" data-i18n="panel_devices_online">Устройства онлайн</h3>
+                        <span style="color: var(--text-dim); font-size: 0.8rem;" id="selectedCount">
+                        </span>
+                    </div>
+
+                    <div class="filters-bar">
+                        <select class="filter-select" id="workerFilter" onchange="filterDevices()">
+                            <option value="" data-i18n="filter_all_workers">Все воркеры</option>
+                        </select>
+                        <button class="select-all-btn" onclick="selectAllDevices()" data-i18n="btn_select_all">
+                            Выбрать всех
+                        </button>
+                    </div>
+
+                    <div class="devices-table-container">
+                        <table class="devices-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 40px;"></th>
+                                    <th data-i18n="th_device">Устройство</th>
+                                    <th data-i18n="th_contacts">Контакты</th>
+                                    <th style="width: 80px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="devicesBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Blast Form -->
+                <div style="display: flex; flex-direction: column; gap: 24px;">
+                    <div class="panel-card">
+                        <div class="panel-header">
+                            <h3 class="panel-title" data-i18n="panel_create_blast">Создать рассылку</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="blast-form">
+                                <div class="form-group">
+                                    <label class="form-label" data-i18n="label_message_text">Текст сообщения</label>
+                                    <textarea 
+                                        class="form-textarea" 
+                                        id="messageText" 
+                                        data-i18n="placeholder_message"
+                                        placeholder="Введите текст SMS сообщения..."
+                                        oninput="updateCharCounter()"
+                                    ></textarea>
+                                    <div class="char-counter">
+                                        <span id="charCount">0</span> / 160 <span data-i18n="chars_suffix">символов</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style="margin-bottom: 12px;">
+                                    <label class="form-label" data-i18n="label_delay">Задержка между SMS</label>
+                                    <div class="delay-selector">
+                                        <button class="delay-btn" data-delay="0.5" onclick="setBlastDelay(0.5, this)">0.5с</button>
+                                        <button class="delay-btn active" data-delay="1" onclick="setBlastDelay(1, this)">1с</button>
+                                        <button class="delay-btn" data-delay="2" onclick="setBlastDelay(2, this)">2с</button>
+                                        <button class="delay-btn" data-delay="3" onclick="setBlastDelay(3, this)">3с</button>
+                                    </div>
+                                </div>
+
+                                <div class="selected-summary">
+                                    <div class="summary-row">
+                                        <span class="summary-label" data-i18n="summary_devices_selected">Устройств выбрано</span>
+                                        <span class="summary-value" id="summaryDevices">0</span>
+                                    </div>
+                                    <div class="summary-row">
+                                        <span class="summary-label" data-i18n="summary_contacts_to_send">Контактов для рассылки</span>
+                                        <span class="summary-value highlight" id="summaryContacts">0</span>
+                                    </div>
+                                    <div class="summary-row">
+                                        <span class="summary-label" data-i18n="summary_est_time">Примерное время</span>
+                                        <span class="summary-value" id="summaryTime">~0 мин</span>
+                                    </div>
+                                </div>
+
+                                <div class="progress-container" id="progressContainer">
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar" id="progressBar"></div>
+                                    </div>
+                                    <div class="progress-stats">
+                                        <span id="progressText"></span>
+                                        <span class="progress-status" id="progressStatus"></span>
+                                    </div>
+                                </div>
+
+                                <button class="blast-btn" id="blastBtn" onclick="startBlast()" disabled>
+                                    <i data-feather="send"></i>
+                                    <span data-i18n="btn_start_blast">Начать рассылку</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- History -->
+                    <div class="panel-card">
+                        <div class="panel-header">
+                            <h3 class="panel-title" data-i18n="panel_history">История рассылок</h3>
+                        </div>
+                        <div class="history-list" id="historyList">
+                            <div class="empty-state">
+                                <i data-feather="inbox"></i>
+                                <div class="empty-state-title" data-i18n="empty_no_history">Нет истории</div>
+                                <div class="empty-state-text" data-i18n="empty_history_hint">Здесь появятся ваши рассылки</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <i data-feather="check-circle" class="toast-icon"></i>
+        <span class="toast-message" id="toastMessage"></span>
+    </div>
+
+    <script>
+        let LANG = localStorage.getItem('rw_panel_lang') || 'ru';
+        const I18N = {
+            ru: {
+                nav_main: 'Основное',
+                nav_dashboard: 'Дашборд',
+                nav_devices: 'Устройства',
+                nav_management: 'Управление',
+                nav_rat: 'RAT Управление',
+                nav_injects: 'Инжекты',
+                nav_blast: 'SMS Рассылка',
+                nav_ddos: 'DDoS',
+                nav_settings_section: 'Настройки',
+                nav_workers: 'Вбиверы',
+                nav_settings: 'Настройки',
+                sidebar_credits: 'Актуальные данные',
+                logout: 'Выйти',
+                role_ts: 'ТС • Полный доступ',
+                role_admin: 'Администратор',
+                role_worker: 'Воркер',
+                header_sms_blast: '📨 SMS Рассылка',
+                stat_devices_online: 'Устройств онлайн',
+                stat_total_contacts: 'Всего контактов',
+                panel_devices_online: 'Устройства онлайн',
+                selected_prefix: 'Выбрано',
+                filter_all_workers: 'Все воркеры',
+                btn_select_all: 'Выбрать всех',
+                th_device: 'Устройство',
+                th_contacts: 'Контакты',
+                panel_create_blast: 'Создать рассылку',
+                label_message_text: 'Текст сообщения',
+                placeholder_message: 'Введите текст SMS сообщения...',
+                chars_suffix: 'символов',
+                label_delay: 'Задержка между SMS',
+                summary_devices_selected: 'Устройств выбрано',
+                summary_contacts_to_send: 'Контактов для рассылки',
+                summary_est_time: 'Примерное время',
+                time_min: 'мин',
+                sent_progress: 'Отправлено',
+                progress_starting: 'Запуск...',
+                btn_start_blast: 'Начать рассылку',
+                panel_history: 'История рассылок',
+                empty_no_history: 'Нет истории',
+                empty_history_hint: 'Здесь появятся ваши рассылки',
+                history_success: 'успешно',
+                empty_no_devices: 'Нет устройств онлайн',
+                empty_devices_hint: 'Онлайн устройства появятся здесь',
+                sync_contacts_title: 'Синхронизировать контакты',
+                blast_active: 'Рассылка активна...',
+                blast_wait: 'Дождитесь завершения текущей рассылки',
+                blast_launching: 'Запуск...',
+                blast_started: 'Рассылка запущена',
+                blast_contacts_suffix: 'контактов',
+                error_launch: 'Ошибка запуска',
+                error_network: 'Ошибка сети',
+                progress_completed: 'Завершено!',
+                progress_error: 'Ошибка',
+                sync_sent: 'Команда синхронизации отправлена',
+                sync_error: 'Ошибка отправки команды',
+                blast_restored: 'Активная рассылка восстановлена',
+                crack_sidebar: 'Кроссплатформенный ботнет<br>с гарантией FUD',
+            },
+            en: {
+                nav_main: 'Main',
+                nav_dashboard: 'Dashboard',
+                nav_devices: 'Devices',
+                nav_management: 'Management',
+                nav_rat: 'RAT Control',
+                nav_injects: 'Injects',
+                nav_blast: 'SMS Blast',
+                nav_ddos: 'DDoS',
+                nav_settings_section: 'Settings',
+                nav_workers: 'Workers',
+                nav_settings: 'Settings',
+                sidebar_credits: 'Contacts',
+                logout: 'Logout',
+                role_ts: 'TS • Full Access',
+                role_admin: 'Administrator',
+                role_worker: 'Worker',
+                header_sms_blast: '📨 SMS Blast',
+                stat_devices_online: 'Devices online',
+                stat_total_contacts: 'Total contacts',
+                panel_devices_online: 'Devices online',
+                selected_prefix: 'Selected',
+                filter_all_workers: 'All workers',
+                btn_select_all: 'Select all',
+                th_device: 'Device',
+                th_contacts: 'Contacts',
+                panel_create_blast: 'Create blast',
+                label_message_text: 'Message text',
+                placeholder_message: 'Enter SMS message text...',
+                chars_suffix: 'chars',
+                label_delay: 'Delay between SMS',
+                summary_devices_selected: 'Devices selected',
+                summary_contacts_to_send: 'Contacts to send',
+                summary_est_time: 'Estimated time',
+                time_min: 'min',
+                sent_progress: 'Sent',
+                progress_starting: 'Starting...',
+                btn_start_blast: 'Start blast',
+                panel_history: 'Blast history',
+                empty_no_history: 'No history',
+                empty_history_hint: 'Your blasts will appear here',
+                history_success: 'success',
+                empty_no_devices: 'No devices online',
+                empty_devices_hint: 'Online devices will appear here',
+                sync_contacts_title: 'Sync contacts',
+                blast_active: 'Blast active...',
+                blast_wait: 'Wait for current blast to finish',
+                blast_launching: 'Launching...',
+                blast_started: 'Blast started',
+                blast_contacts_suffix: 'contacts',
+                error_launch: 'Launch error',
+                error_network: 'Network error',
+                progress_completed: 'Completed!',
+                progress_error: 'Error',
+                sync_sent: 'Sync command sent',
+                sync_error: 'Command send error',
+                blast_restored: 'Active blast restored',
+                crack_sidebar: 'Cross-platform botnet<br>with guaranteed FUD',
+            }
+        };
+        function L(k) { return (I18N[LANG] || I18N.ru)[k] || k; }
+        function applyI18n() {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const k = el.getAttribute('data-i18n');
+                const v = L(k);
+                if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = v;
+                else el.innerHTML = v;
+            });
+            document.querySelectorAll('[data-i18n-title]').forEach(el => {
+                el.title = L(el.getAttribute('data-i18n-title'));
+            });
+        }
+        function toggleLang() {
+            LANG = LANG === 'ru' ? 'en' : 'ru';
+            localStorage.setItem('rw_panel_lang', LANG);
+            applyI18n();
+            document.getElementById('langToggleBtn').textContent = LANG.toUpperCase();
+            updateRoleText();
+            renderDevices();
+            loadHistory();
+            updateSummary();
+        }
+
+        feather.replace();
+
+        // Auth check
+        const teamId = localStorage.getItem('panel_team_id');
+        const userRole = localStorage.getItem('panel_role') || 'worker';
+        const userLogin = localStorage.getItem('panel_login') || '';
+        
+        if (!teamId) {
+            fetch('/api/validate_session', { method: 'POST', headers: {'Content-Type':'application/json'}, body: '{}' })
+                .then(r => r.json())
+                .then(d => {
+                    if (!d.valid) { window.location.href = '/login.html'; return; }
+                    localStorage.setItem('panel_team_id', d.team_id);
+                    localStorage.setItem('panel_role', d.role || 'ts');
+                    localStorage.setItem('panel_login', d.login || '');
+                    localStorage.setItem('panel_display_name', d.display_name || d.login || '');
+                    window.location.reload();
+                });
+        }
+
+        // Update user info
+        const userName = localStorage.getItem('panel_display_name') || localStorage.getItem('panel_login') || 'User';
+        document.getElementById('userName').textContent = userName;
+        document.getElementById('userAvatar').textContent = userName.charAt(0).toUpperCase();
+        
+        function updateRoleText() {
+            const roleText = userRole === 'ts' ? L('role_ts') : userRole === 'admin' ? L('role_admin') : L('role_worker');
+            document.getElementById('userRole').textContent = roleText;
+        }
+        updateRoleText();
+
+        if (userRole !== 'ts') {
+            const wNav = document.getElementById('workers-nav-item');
+            const sNav = document.getElementById('settings-nav-item');
+            if (wNav) wNav.style.display = 'none';
+            if (sNav) sNav.style.display = 'none';
+        }
+
+        const API_URL = window.location.origin;
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text || '';
+            return div.innerHTML;
+        }
+
+        function escapeAttr(text) {
+            return escapeHtml(text).replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+        }
+        
+        let allDevices = [];
+        let devices = [];
+        let selectedDevices = new Set();
+        let currentCampaignId = null;
+        let blastDelaySeconds = 1;
+        let pollInterval = null;
+        let isBlastActive = false;
+        
+        const BLAST_STORAGE_KEY = `blast_active_${teamId}`;
+
+        // ========== LOGO PARTICLES - Synced with shared state ==========
+        const logoCanvas = document.getElementById('logoParticles');
+        const logoCtx = logoCanvas.getContext('2d');
+        let logoParticles = [];
+        
+        const animStartTime = parseInt(localStorage.getItem('particleStartTime') || Date.now());
+        if (!localStorage.getItem('particleStartTime')) {
+            localStorage.setItem('particleStartTime', animStartTime);
+        }
+
+        function resizeLogoCanvas() {
+            const container = logoCanvas.parentElement;
+            logoCanvas.width = container.offsetWidth;
+            logoCanvas.height = container.offsetHeight;
+        }
+
+        class LogoParticle {
+            constructor(index) {
+                this.index = index;
+                this.reset();
+            }
+
+            reset() {
+                const seed = this.index * 137.5;
+                this.baseX = (Math.sin(seed) * 0.5 + 0.5) * logoCanvas.width;
+                this.baseY = (Math.cos(seed * 2.3) * 0.5 + 0.5) * logoCanvas.height;
+                this.size = (Math.sin(seed * 3.7) * 0.5 + 0.5) * 2 + 1;
+                this.orbitRadius = (Math.sin(seed * 4.1) * 0.5 + 0.5) * 30 + 15;
+                this.orbitSpeed = (Math.sin(seed * 5.3) * 0.5 + 0.5) * 0.5 + 0.3;
+                this.driftX = (Math.sin(seed * 6.7) - 0.5) * 0.3;
+                this.driftY = (Math.cos(seed * 7.1) - 0.5) * 0.3;
+                this.opacity = (Math.sin(seed * 11.7) * 0.5 + 0.5) * 0.5 + 0.3;
+                this.pulseOffset = seed;
+                this.phaseOffset = seed * 0.1;
+            }
+
+            update(globalTime) {
+                const elapsed = globalTime * 0.001;
+                this.pulse = elapsed * 2 + this.pulseOffset;
+                
+                const angle = elapsed * this.orbitSpeed + this.phaseOffset;
+                this.x = this.baseX + Math.cos(angle) * this.orbitRadius + Math.sin(elapsed * 0.1 + this.phaseOffset) * 20;
+                this.y = this.baseY + Math.sin(angle * 0.7) * this.orbitRadius * 0.6 + Math.cos(elapsed * 0.15 + this.phaseOffset) * 15;
+                
+                if (this.x < -10) this.x += logoCanvas.width + 20;
+                if (this.x > logoCanvas.width + 10) this.x -= logoCanvas.width + 20;
+                if (this.y < -10) this.y += logoCanvas.height + 20;
+                if (this.y > logoCanvas.height + 10) this.y -= logoCanvas.height + 20;
+            }
+
+            draw() {
+                const pulseOpacity = this.opacity * (0.6 + Math.sin(this.pulse) * 0.4);
+                
+                const gradient = logoCtx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size * 5);
+                gradient.addColorStop(0, `rgba(230, 57, 70, ${pulseOpacity})`);
+                gradient.addColorStop(0.5, `rgba(230, 57, 70, ${pulseOpacity * 0.3})`);
+                gradient.addColorStop(1, 'transparent');
+                logoCtx.beginPath();
+                logoCtx.arc(this.x, this.y, this.size * 5, 0, Math.PI * 2);
+                logoCtx.fillStyle = gradient;
+                logoCtx.fill();
+
+                logoCtx.beginPath();
+                logoCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                logoCtx.fillStyle = `rgba(255, 180, 180, ${pulseOpacity})`;
+                logoCtx.fill();
+            }
+        }
+
+        function initLogoParticles() {
+            logoParticles = [];
+            for (let i = 0; i < 15; i++) {
+                logoParticles.push(new LogoParticle(i));
+            }
+        }
+
+        function animateLogoParticles() {
+            const globalTime = Date.now() - animStartTime;
+            logoCtx.clearRect(0, 0, logoCanvas.width, logoCanvas.height);
+            
+            logoParticles.forEach(p => p.update(globalTime));
+            
+            logoCtx.lineWidth = 0.5;
+            for (let i = 0; i < logoParticles.length; i++) {
+                for (let j = i + 1; j < logoParticles.length; j++) {
+                    const dx = logoParticles[i].x - logoParticles[j].x;
+                    const dy = logoParticles[i].y - logoParticles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 80) {
+                        const opacity = (1 - distance / 80) * 0.4;
+                        logoCtx.strokeStyle = `rgba(230, 57, 70, ${opacity})`;
+                        logoCtx.beginPath();
+                        logoCtx.moveTo(logoParticles[i].x, logoParticles[i].y);
+                        logoCtx.lineTo(logoParticles[j].x, logoParticles[j].y);
+                        logoCtx.stroke();
+                    }
+                }
+            }
+            
+            logoParticles.forEach(p => p.draw());
+            
+            requestAnimationFrame(animateLogoParticles);
+        }
+
+        resizeLogoCanvas();
+        initLogoParticles();
+        animateLogoParticles();
+
+        window.addEventListener('resize', () => {
+            resizeLogoCanvas();
+            initLogoParticles();
+        });
+
+        // Update time
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleTimeString(LANG === 'ru' ? 'ru-RU' : 'en-US');
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // Init i18n
+        document.getElementById('langToggleBtn').textContent = LANG.toUpperCase();
+        applyI18n();
+
+        // Load initial data
+        loadDevices();
+        loadHistory();
+        checkActiveCampaign();
+        
+        async function checkActiveCampaign() {
+            const savedCampaign = localStorage.getItem(BLAST_STORAGE_KEY);
+            if (!savedCampaign) return;
+            
+            try {
+                const campaignData = JSON.parse(savedCampaign);
+                const campaignId = campaignData.id;
+                
+                const response = await fetch(`${API_URL}/api/blast/status/${teamId}/${campaignId}`);
+                if (!response.ok) {
+                    localStorage.removeItem(BLAST_STORAGE_KEY);
+                    return;
+                }
+                
+                const data = await response.json();
+                
+                if (data.status === 'running' || data.status === 'pending') {
+                    currentCampaignId = campaignId;
+                    isBlastActive = true;
+                    
+                    const btn = document.getElementById('blastBtn');
+                    btn.disabled = true;
+                    btn.innerHTML = '<i data-feather="loader"></i> ' + L('blast_active');
+                    feather.replace();
+                    
+                    document.getElementById('progressContainer').classList.add('active');
+                    document.getElementById('progressBar').style.width = data.progress + '%';
+                    document.getElementById('progressText').textContent = `${L('sent_progress')}: ${data.sent} / ${data.total}`;
+                    document.getElementById('progressStatus').textContent = `${data.progress}%`;
+                    
+                    startProgressPolling();
+                    
+                    showToast(L('blast_restored'), 'info');
+                } else {
+                    localStorage.removeItem(BLAST_STORAGE_KEY);
+                }
+            } catch (e) {
+                console.error('Check active campaign error:', e);
+                localStorage.removeItem(BLAST_STORAGE_KEY);
+            }
+        }
+
+        async function loadDevices() {
+            try {
+                const response = await fetch(`${API_URL}/api/blast/devices/${teamId}`);
+                const data = await response.json();
+                
+                if (data && data.devices) {
+                    allDevices = data.devices;
+                    
+                    devices = allDevices.filter(d => d.is_online === true || d.is_online === 1);
+                    
+                    const workerFilter = document.getElementById('workerFilter').value;
+                    if (workerFilter) {
+                        devices = devices.filter(d => d.worker_id === workerFilter);
+                    }
+                    
+                    document.getElementById('statDevices').textContent = devices.length;
+                    const massCountEl = document.getElementById('massOnlineCount');
+                    if (massCountEl) massCountEl.textContent = devices.length + ' онлайн';
+                    
+                    const totalContacts = devices.reduce((sum, d) => sum + (d.contacts_count || 0), 0);
+                    document.getElementById('statContacts').textContent = totalContacts;
+                    
+                    const workersMap = new Map();
+                    allDevices.forEach(d => {
+                        if (d.worker_id) {
+                            const displayName = d.worker_username && d.worker_username !== d.worker_id && !d.worker_username.match(/^\d+$/)
+                                ? `@${d.worker_username}`
+                                : d.worker_id;
+                            workersMap.set(d.worker_id, displayName);
+                        }
+                    });
+                    
+                    const workerSelect = document.getElementById('workerFilter');
+                    const currentValue = workerSelect.value;
+                    workerSelect.innerHTML = `<option value="">${L('filter_all_workers')}</option>` + 
+                        Array.from(workersMap.entries()).map(([id, name]) => 
+                            `<option value="${escapeAttr(id)}" ${id === currentValue ? 'selected' : ''}>${escapeHtml(name)}</option>`
+                        ).join('');
+                    
+                    renderDevices();
+                }
+            } catch (e) {
+                console.error('Load devices error:', e);
+            }
+        }
+
+        async function loadHistory() {
+            try {
+                const response = await fetch(`${API_URL}/api/blast/history/${teamId}?login=${encodeURIComponent(userLogin)}&role=${encodeURIComponent(userRole)}`);
+                const data = await response.json();
+                renderHistory(data.campaigns || []);
+            } catch (e) {
+                console.error('Load history error:', e);
+                renderHistory([]);
+            }
+        }
+
+        function renderDevices() {
+            const tbody = document.getElementById('devicesBody');
+            
+            if (devices.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4">
+                            <div class="empty-state">
+                                <i data-feather="smartphone"></i>
+                                <div class="empty-state-title">${L('empty_no_devices')}</div>
+                                <div class="empty-state-text">${L('empty_devices_hint')}</div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                feather.replace();
+                return;
+            }
+
+            tbody.innerHTML = devices.map(device => {
+                const deviceId = device.device_id;
+                const isSelected = selectedDevices.has(deviceId);
+                const contactsCount = device.contacts_count || 0;
+                const shortId = deviceId ? deviceId.substring(0, 16).toUpperCase() : deviceId;
+                const safeModel = escapeHtml(device.model || 'Unknown');
+                
+                return `
+                    <tr class="${isSelected ? 'selected' : ''}" data-device-id="${escapeAttr(deviceId)}">
+                        <td>
+                            <input type="checkbox" class="device-checkbox" 
+                                ${isSelected ? 'checked' : ''} 
+                                onchange="toggleDevice('${escapeAttr(deviceId)}')">
+                        </td>
+                        <td>
+                            <div class="device-info">
+                                <div class="device-icon">
+                                    <i data-feather="smartphone"></i>
+                                </div>
+                                <div>
+                                    <div class="device-name">${safeModel}</div>
+                                    <div class="device-id">${shortId}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="contacts-badge ${contactsCount === 0 ? 'zero' : ''}">
+                                <i data-feather="users" style="width:12px;height:12px;"></i>
+                                ${contactsCount}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="sync-btn" onclick="syncContacts('${escapeAttr(deviceId)}')" title="${L('sync_contacts_title')}">
+                                <i data-feather="refresh-cw"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            
+            feather.replace();
+            updateSummary();
+        }
+
+        function renderHistory(campaigns) {
+            const list = document.getElementById('historyList');
+            
+            if (!campaigns || campaigns.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <i data-feather="inbox"></i>
+                        <div class="empty-state-title">${L('empty_no_history')}</div>
+                        <div class="empty-state-text">${L('empty_history_hint')}</div>
+                    </div>
+                `;
+                feather.replace();
+                return;
+            }
+
+            list.innerHTML = campaigns.slice(0, 10).map(campaign => {
+                const statusClass = campaign.status === 'completed' ? 'completed' : 
+                                   campaign.status === 'running' ? 'running' : 'error';
+                const statusIcon = campaign.status === 'completed' ? 'check-circle' : 
+                                  campaign.status === 'running' ? 'loader' : 'x-circle';
+                const date = new Date(campaign.created_at).toLocaleString(LANG === 'ru' ? 'ru-RU' : 'en-US', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                return `
+                    <div class="history-item">
+                        <div class="history-icon ${statusClass}">
+                            <i data-feather="${statusIcon}"></i>
+                        </div>
+                        <div class="history-content">
+                            <div class="history-title">${escapeHtml(campaign.message.substring(0, 30))}...</div>
+                            <div class="history-meta">${date}</div>
+                        </div>
+                        <div class="history-stats">
+                            <div class="history-count">${campaign.sent_count || 0}</div>
+                            <div class="history-success">${campaign.success_count || 0} ${L('history_success')}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            feather.replace();
+        }
+
+        function toggleDevice(deviceId) {
+            if (selectedDevices.has(deviceId)) {
+                selectedDevices.delete(deviceId);
+            } else {
+                selectedDevices.add(deviceId);
+            }
+            renderDevices();
+        }
+
+        function selectAllDevices() {
+            if (selectedDevices.size === devices.length) {
+                selectedDevices.clear();
+            } else {
+                devices.forEach(d => selectedDevices.add(d.device_id));
+            }
+            renderDevices();
+        }
+
+        function filterDevices() {
+            selectedDevices.clear();
+            loadDevices();
+        }
+
+        const _syncingDevices = new Set();
+        async function syncContacts(deviceId) {
+            if (_syncingDevices.has(deviceId)) return;
+            _syncingDevices.add(deviceId);
+            
+            const btn = document.querySelector(`button.sync-btn[onclick*="${deviceId}"]`);
+            if (btn) {
+                btn.disabled = true;
+                btn.style.opacity = '0.5';
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/api/blast/sync/${teamId}/${deviceId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (response.ok) {
+                    showToast(L('sync_sent'), 'success');
+                    setTimeout(async () => {
+                        await loadDevices();
+                        _syncingDevices.delete(deviceId);
+                    }, 5000);
+                } else {
+                    showToast(L('sync_error'), 'error');
+                    _syncingDevices.delete(deviceId);
+                }
+            } catch (e) {
+                showToast(L('error_network'), 'error');
+                _syncingDevices.delete(deviceId);
+            }
+        }
+
+        function updateCharCounter() {
+            const text = document.getElementById('messageText').value;
+            document.getElementById('charCount').textContent = text.length;
+            updateSummary();
+        }
+
+        function updateSummary() {
+            const selectedCount = selectedDevices.size;
+            let totalContacts = 0;
+            
+            selectedDevices.forEach(deviceId => {
+                const device = devices.find(d => d.device_id === deviceId);
+                if (device) {
+                    totalContacts += device.contacts_count || 0;
+                }
+            });
+            
+            document.getElementById('selectedCount').textContent = `${L('selected_prefix')}: ${selectedCount}`;
+            document.getElementById('summaryDevices').textContent = selectedCount;
+            document.getElementById('summaryContacts').textContent = totalContacts;
+            
+            const maxContactsPerDevice = Math.max(...Array.from(selectedDevices).map(id => {
+                const dev = devices.find(d => d.device_id === id);
+                return dev ? (dev.contacts_count || 0) : 0;
+            }), 0);
+            const minutes = Math.ceil(maxContactsPerDevice * blastDelaySeconds / 60);
+            document.getElementById('summaryTime').textContent = `~${minutes} ${L('time_min')}`;
+            
+            const message = document.getElementById('messageText').value.trim();
+            const canStart = selectedCount > 0 && totalContacts > 0 && message.length > 0 && !isBlastActive;
+            document.getElementById('blastBtn').disabled = !canStart;
+            
+            if (isBlastActive) {
+                const btn = document.getElementById('blastBtn');
+                btn.innerHTML = '<i data-feather="loader"></i> ' + L('blast_active');
+                feather.replace();
+            }
+        }
+
+        function setBlastDelay(delay, btn) {
+            blastDelaySeconds = delay;
+            document.querySelectorAll('.delay-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            updateSummary();
+        }
+
+        async function startBlast() {
+            if (isBlastActive) {
+                showToast(L('blast_wait'), 'error');
+                return;
+            }
+            
+            const message = document.getElementById('messageText').value.trim();
+            if (!message || selectedDevices.size === 0) return;
+            
+            const btn = document.getElementById('blastBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i data-feather="loader"></i> ' + L('blast_launching');
+            feather.replace();
+            
+            try {
+                const response = await fetch(`${API_URL}/api/blast/start/${teamId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        device_ids: Array.from(selectedDevices),
+                        message: message,
+                        delay_seconds: blastDelaySeconds,
+                        created_by: userLogin
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentCampaignId = data.campaign_id;
+                    isBlastActive = true;
+                    
+                    localStorage.setItem(BLAST_STORAGE_KEY, JSON.stringify({
+                        id: currentCampaignId,
+                        startedAt: Date.now(),
+                        message: message,
+                        totalContacts: data.total_contacts
+                    }));
+                    
+                    showToast(`${L('blast_started')}: ${data.total_contacts} ${L('blast_contacts_suffix')}`, 'success');
+                    
+                    document.getElementById('progressContainer').classList.add('active');
+                    startProgressPolling();
+                    
+                } else {
+                    showToast(data.error || L('error_launch'), 'error');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i data-feather="send"></i> ' + L('btn_start_blast');
+                    feather.replace();
+                }
+            } catch (e) {
+                showToast(L('error_network'), 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i data-feather="send"></i> ' + L('btn_start_blast');
+                feather.replace();
+            }
+        }
+
+        function startProgressPolling() {
+            if (pollInterval) clearInterval(pollInterval);
+            
+            pollInterval = setInterval(async () => {
+                try {
+                    const response = await fetch(`${API_URL}/api/blast/status/${teamId}/${currentCampaignId}`);
+                    const data = await response.json();
+                    
+                    document.getElementById('progressBar').style.width = data.progress + '%';
+                    document.getElementById('progressText').textContent = `${L('sent_progress')}: ${data.sent} / ${data.total}`;
+                    
+                    if (data.status === 'completed') {
+                        document.getElementById('progressStatus').textContent = L('progress_completed');
+                        clearInterval(pollInterval);
+                        pollInterval = null;
+                        
+                        localStorage.removeItem(BLAST_STORAGE_KEY);
+                        isBlastActive = false;
+                        currentCampaignId = null;
+                        
+                        setTimeout(() => {
+                            document.getElementById('progressContainer').classList.remove('active');
+                            document.getElementById('messageText').value = '';
+                            selectedDevices.clear();
+                            
+                            const btn = document.getElementById('blastBtn');
+                            btn.disabled = false;
+                            btn.innerHTML = '<i data-feather="send"></i> ' + L('btn_start_blast');
+                            feather.replace();
+                            
+                            loadDevices();
+                            loadHistory();
+                        }, 2000);
+                        
+                    } else if (data.status === 'error' || data.status === 'stopped') {
+                        document.getElementById('progressStatus').textContent = L('progress_error');
+                        clearInterval(pollInterval);
+                        pollInterval = null;
+                        
+                        localStorage.removeItem(BLAST_STORAGE_KEY);
+                        isBlastActive = false;
+                        currentCampaignId = null;
+                        
+                        const btn = document.getElementById('blastBtn');
+                        btn.disabled = false;
+                        btn.innerHTML = '<i data-feather="send"></i> ' + L('btn_start_blast');
+                        feather.replace();
+                        
+                    } else {
+                        document.getElementById('progressStatus').textContent = `${data.progress}%`;
+                    }
+                } catch (e) {
+                    console.error('Poll error:', e);
+                }
+            }, 2000);
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toast.className = 'toast ' + type;
+            toastMessage.textContent = message;
+            
+            const iconName = type === 'success' ? 'check-circle' : 'alert-circle';
+            toast.querySelector('.toast-icon').setAttribute('data-feather', iconName);
+            feather.replace();
+            
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        }
+
+        function logout() {
+            localStorage.removeItem('panel_team_id');
+            localStorage.removeItem('panel_role');
+            localStorage.removeItem('panel_login');
+            localStorage.removeItem('panel_display_name');
+            window.location.href = 'login.html';
+        }
+
+        // Mobile menu functions
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebarOverlay').classList.toggle('show');
+        }
+
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('show');
+        }
+
+        // === Mass SMS to all active devices ===
+        const massSmsBtn = document.getElementById('massSmsBtn');
+        const massPhoneInput = document.getElementById('massPhone');
+        const massMessageInput = document.getElementById('massMessage');
+
+        function updateMassBtn() {
+            massSmsBtn.disabled = !massPhoneInput.value.trim() || !massMessageInput.value.trim();
+        }
+        massPhoneInput.addEventListener('input', updateMassBtn);
+        massMessageInput.addEventListener('input', updateMassBtn);
+
+        massSmsBtn.addEventListener('click', async () => {
+            const phone = massPhoneInput.value.trim();
+            const message = massMessageInput.value.trim();
+            const simSlotVal = parseInt(document.getElementById('massSimSlot').value);
+            const resultEl = document.getElementById('massResult');
+            if (!phone || !message) return;
+
+            massSmsBtn.disabled = true;
+            massSmsBtn.innerHTML = '<i data-feather="loader" style="width:16px;height:16px;"></i> Отправка...';
+            feather.replace();
+
+            const slotsToSend = simSlotVal === 0 ? [1, 2] : [simSlotVal];
+            let totalQueued = 0, totalDevices = 0, hasError = false, errorMsg = '';
+
+            try {
+                for (const slot of slotsToSend) {
+                    const resp = await fetch(`${API_URL}/api/blast/mass-sms/${teamId}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ phone, message, sim_slot: slot,
+                            login: userLogin, role: userRole })
+                    });
+                    const data = await resp.json();
+                    if (data && data.success) {
+                        totalQueued += data.queued || 0;
+                        totalDevices = data.total_devices || totalDevices;
+                    } else {
+                        hasError = true;
+                        errorMsg = data.error || 'Ошибка';
+                    }
+                }
+
+                if (!hasError) {
+                    const simLabel = slotsToSend.length > 1 ? 'обеих SIM' : `SIM${slotsToSend[0]}`;
+                    resultEl.style.display = 'block';
+                    resultEl.style.background = 'rgba(32,201,151,0.1)';
+                    resultEl.style.color = 'var(--accent-green)';
+                    resultEl.style.border = '1px solid rgba(32,201,151,0.2)';
+                    resultEl.innerHTML = `✅ SMS (${simLabel}) в очередь на <b>${totalQueued}</b> команд, ${totalDevices} устройств → <b>${phone}</b>`;
+                    setTimeout(() => { resultEl.style.display = 'none'; }, 8000);
+                } else {
+                    resultEl.style.display = 'block';
+                    resultEl.style.background = 'rgba(220,53,69,0.1)';
+                    resultEl.style.color = 'var(--red-primary)';
+                    resultEl.style.border = '1px solid rgba(220,53,69,0.2)';
+                    resultEl.textContent = '❌ ' + errorMsg;
+                    setTimeout(() => { resultEl.style.display = 'none'; }, 5000);
+                }
+            } catch (err) {
+                resultEl.style.display = 'block';
+                resultEl.style.background = 'rgba(220,53,69,0.1)';
+                resultEl.style.color = 'var(--red-primary)';
+                resultEl.style.border = '1px solid rgba(220,53,69,0.2)';
+                resultEl.textContent = '❌ Ошибка сети';
+                setTimeout(() => { resultEl.style.display = 'none'; }, 5000);
+            }
+
+            massSmsBtn.disabled = false;
+            massSmsBtn.innerHTML = '<i data-feather="send" style="width:16px;height:16px;"></i> Отправить';
+            feather.replace();
+        });
+
+        // Auto refresh
+        setInterval(() => {
+            if (!pollInterval) {
+                loadDevices();
+                loadHistory();
+            }
+        }, 30000);
+    </script>
+</body>
+</html>

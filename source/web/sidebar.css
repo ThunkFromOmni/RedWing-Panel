@@ -1,0 +1,349 @@
+/* RedWing Panel — Shared Sidebar Styles
+ * Single canonical source of truth, loaded by all panel pages.
+ * Uses CSS variables defined in the page :root and theme.js.
+ */
+
+.sidebar {
+    width: var(--sidebar-width, 260px);
+    min-height: 100vh;
+    background: var(--sidebar-bg, #0b0b0e);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 100;
+    font-family: 'Exo 2', sans-serif;
+}
+
+/* ── Logo block ── */
+.sidebar-logo {
+    padding: 20px 16px 16px;
+    border-bottom: 1px solid var(--border-color);
+    position: relative;
+    overflow: hidden;
+}
+
+.logo-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+    z-index: 2;
+}
+
+.logo-svg-container {
+    width: 160px;
+    height: 108px;
+    position: relative;
+}
+
+.logo-svg-container svg {
+    width: 100%;
+    height: 100%;
+    transform: scaleY(-1);
+    filter: drop-shadow(0 0 20px var(--red-glow));
+}
+
+/*
+ * Middle silhouette of the RedWing logo. It is the only <path> in the SVG
+ * that sits at the root (outside of <g class="wing-*">) AND carries a stroke
+ * attribute, so we can target it without touching any HTML.
+ *
+ * The silhouette is filled with --bg-card (matches sidebar bg) which makes
+ * it invisible on dark backgrounds — we lift it with a brighter red stroke
+ * plus a drop-shadow halo so the figure reads clearly between the wings.
+ */
+.logo-svg-container svg > path[stroke] {
+    fill: #120306 !important;
+    stroke: var(--red-primary) !important;
+    stroke-opacity: 0.35 !important;
+    stroke-width: 1.5 !important;
+    stroke-linejoin: round;
+    paint-order: stroke fill;
+    filter:
+        drop-shadow(0 0 6px rgba(230, 57, 70, 0.55))
+        drop-shadow(0 0 18px var(--red-glow));
+}
+
+/* Same subtle outline on both wings so the silhouette stroke doesn't look
+   like the only path with a border. Wings keep their red fill — we only
+   add a soft darker edge to visually match the middle figure. */
+.logo-svg-container svg .wing-left path,
+.logo-svg-container svg .wing-right path {
+    stroke: #5a0d14;
+    stroke-opacity: 0.55;
+    stroke-width: 1.5;
+    stroke-linejoin: round;
+    paint-order: stroke fill;
+}
+
+.wing-left  { transform-origin: 75% 50%; animation: rwWingFlapLeft 2.5s ease-in-out infinite; }
+.wing-right { transform-origin: 25% 50%; animation: rwWingFlapRight 2.5s ease-in-out infinite; }
+
+@keyframes rwWingFlapLeft  {
+    0%, 100% { transform: rotate(0deg) translateY(0); }
+    50%      { transform: rotate(-3deg) translateY(-2px); }
+}
+@keyframes rwWingFlapRight {
+    0%, 100% { transform: rotate(0deg) translateY(0); }
+    50%      { transform: rotate(3deg) translateY(-2px); }
+}
+
+.logo-glow {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    width: 200px;
+    height: 140px;
+    background: radial-gradient(ellipse, var(--red-glow) 0%, transparent 60%);
+    transform: translate(-50%, -50%);
+    z-index: 0;
+    animation: rwLogoGlowPulse 3s ease-in-out infinite;
+}
+
+@keyframes rwLogoGlowPulse {
+    0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+    50%      { opacity: 1;   transform: translate(-50%, -50%) scale(1.15); }
+}
+
+.logo-fog {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse at 50% 30%, var(--red-glow) 0%, transparent 70%);
+    opacity: 0.5;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.logo-particles {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.logo-separator {
+    width: 50%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--red-primary), transparent);
+    opacity: 0.4;
+}
+
+.logo-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.logo-name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--red-primary);
+    letter-spacing: 4px;
+    text-transform: none;
+    text-shadow: 0 0 20px var(--red-glow), 0 0 40px var(--red-glow);
+}
+
+.logo-subtitle {
+    font-size: 0.6rem;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 2px;
+}
+
+/* ── Navigation ── */
+.sidebar-nav {
+    flex: 1;
+    padding: 20px 12px;
+    overflow-y: auto;
+}
+
+.nav-section { margin-bottom: 24px; }
+
+.nav-section-title {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    padding: 0 12px;
+    margin-bottom: 8px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 6px;
+    color: var(--text-gray);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    margin-bottom: 2px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.nav-item:hover {
+    background: var(--bg-card-hover);
+    color: var(--text-white);
+}
+
+.nav-item.active {
+    background: var(--red-primary);
+    color: #fff;
+    border-radius: 6px;
+}
+
+.nav-item-icon     { width: 20px; height: 20px; stroke-width: 2; flex-shrink: 0; }
+.nav-item-icon svg { width: 20px; height: 20px; }
+.nav-item-text     { font-size: 0.9rem; font-weight: 500; }
+
+.nav-item-badge {
+    margin-left: auto;
+    background: var(--red-primary);
+    color: #fff;
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+}
+.nav-item.active .nav-item-badge {
+    background: rgba(255, 255, 255, 0.25);
+    color: #fff;
+}
+
+/* ── User block ── */
+.sidebar-user {
+    padding: 16px 20px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    background: var(--red-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.user-info { flex: 1; min-width: 0; }
+.user-name { font-size: 0.9rem; font-weight: 600; color: var(--text-white); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.user-role { font-size: 0.7rem; color: var(--text-dim); }
+
+.user-logout {
+    color: var(--text-dim);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+}
+
+.user-logout svg { width: 18px; height: 18px; }
+.user-logout:hover {
+    color: var(--red-primary);
+    background: var(--bg-card);
+}
+
+/* ── Overlay for mobile ── */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: var(--overlay-bg, rgba(0, 0, 0, 0.5));
+    z-index: 99;
+}
+.sidebar-overlay.show { display: block; }
+
+/* ── Mobile hamburger button ── */
+.mobile-menu-btn {
+    display: none;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-white);
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+}
+.mobile-menu-btn svg { width: 24px; height: 24px; }
+
+/* ── Mobile layout ── */
+@media (max-width: 1024px) {
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+    .sidebar.open { transform: translateX(0); }
+    .mobile-menu-btn { display: inline-flex; }
+}
+
+/* ── Global scrollbar (webkit + firefox) ──
+ * Ensures pages without their own scrollbar rules don't render the default
+ * bright OS scrollbar on top of the dark theme. Applies to the document
+ * root, the sidebar itself, and every scrollable panel surface. */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg-dark, #080809);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb, #1a1a1f);
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-dim, #404048);
+}
+html, body, .sidebar, .sidebar-nav, .main, .main-content {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb, #1a1a1f) var(--bg-dark, #080809);
+}
+
+.sidebar-credits {
+    padding: 12px 20px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+}
+.sidebar-credits-title {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #ef4444;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+.sidebar-credits a {
+    display: block;
+    font-size: 0.78rem;
+    color: #c0c0cc;
+    text-decoration: none;
+    padding: 3px 0;
+    transition: color 0.2s;
+    line-height: 1.5;
+}
+.sidebar-credits a:hover {
+    color: #fff;
+}
